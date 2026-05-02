@@ -5,3 +5,4 @@ rank-bm25>=0.2,<1
 litellm>=1.40,<2
 python-dotenv>=1.0,<2
 tenacity>=8.2,<10
+matplotlib>=3.8,<4

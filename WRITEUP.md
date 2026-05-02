@@ -15,10 +15,8 @@ How did you approach each stage? What model did you choose and why? How did you 
 What did you try, what worked, what didn't? Include metrics across iterations.
 
 | Iteration | Change | Category Acc | Priority Acc | Response Quality |
-|-----------|--------|-------------|-------------|-----------------|
-| v1        |        |             |             |                 |
-| v2        |        |             |             |                 |
-| v3        |        |             |             |                 |
+|-----------|--------|-------------|--------------|-------------------|
+| v1 | Baseline: BM25 k≈3, prompts + validate + postprocess, Gemini Flash (`gemini-flash-latest`); full `pipeline.py --eval` (46 tickets) | **87.0%** | **58.7%** | KB proxy overlap mean **~0.116**; actionability hint **8.7%**; avg reply **~332** chars |
 
 ## Response Quality Metric
 
