@@ -18,12 +18,11 @@ import logging
 from pathlib import Path
 
 from agent import classify_tickets_sync
+from evaluate import evaluate_run
 from loader import inspect_kb, load_knowledge_base, load_tickets
 from postprocess import postprocess
 from preprocess import build_retriever, preprocess_kb
 from validate import validate_results
-
-from evaluate import evaluate_run
 
 logging.basicConfig(
     level=logging.INFO,
