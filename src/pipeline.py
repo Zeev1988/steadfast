@@ -99,7 +99,15 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
     processed_kb = preprocess_kb(kb_entries)
     retriever = build_retriever(processed_kb)
     logger.info("BM25 index built over %d KB entries (k=5)", len(processed_kb))
-
+    if tickets:
+        sample_chunks = retriever(tickets[0])
+        preview = (sample_chunks[0][:160] + "…") if sample_chunks else "(no chunks)"
+        logger.info(
+            "Retriever dry-run on first ticket %s: %d chunk(s); first chunk starts: %s",
+            tickets[0].ticket_id,
+            len(sample_chunks),
+            preview,
+        )
     return []
 
 
