@@ -15,6 +15,7 @@ import logging
 from pathlib import Path
 
 from loader import inspect_kb, load_knowledge_base, load_tickets
+from preprocess import build_retriever, preprocess_kb
 
 logging.basicConfig(
     level=logging.INFO,
@@ -90,6 +91,24 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
     if args.limit:
         tickets = tickets[: args.limit]
         logger.info("Limited to %d tickets (--limit)", args.limit)
+
+    # ------------------------------------------------------------------
+    # Stage 2 — Preprocess
+    # ------------------------------------------------------------------
+    logger.info("=== Stage 2: Preprocess ===")
+    processed_kb = preprocess_kb(kb_entries)
+    retriever = build_retriever(processed_kb)
+    logger.info("BM25 index built over %d KB entries (k=5)", len(processed_kb))
+    if tickets:
+        sample_chunks = retriever(tickets[0])
+        preview = (sample_chunks[0][:160] + "…") if sample_chunks else "(no chunks)"
+        logger.info(
+            "Retriever dry-run on first ticket %s: %d chunk(s); first chunk starts: %s",
+            tickets[0].ticket_id,
+            len(sample_chunks),
+            preview,
+        )
+    return []
 
 
 def main() -> None:
