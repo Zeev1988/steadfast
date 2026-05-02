@@ -34,6 +34,7 @@ import json
 import logging
 import os
 import re
+import time
 from collections.abc import Callable
 from pathlib import Path
 
@@ -85,8 +86,7 @@ def _build_system_prompt(kb_chunks: list[str]) -> str:
     """Assemble the full system prompt with KB context."""
     if kb_chunks:
         context_block = "\n\n---\n\n".join(
-            f"### Similar Ticket {i+1}\n{chunk}"
-            for i, chunk in enumerate(kb_chunks)
+            f"### Similar Ticket {i + 1}\n{chunk}" for i, chunk in enumerate(kb_chunks)
         )
     else:
         context_block = "(No similar tickets found in the knowledge base.)"
@@ -150,6 +150,7 @@ def _parse_response(raw_text: str, ticket_id: str) -> TriageResult:
 # LLM call with retries (Tenacity + LiteLLM)
 # ---------------------------------------------------------------------------
 
+
 def _is_retryable(exc: BaseException) -> bool:
     """Decide whether an exception warrants a retry.
 
@@ -167,10 +168,15 @@ def _is_retryable(exc: BaseException) -> bool:
       - Any other unexpected exception type.
     """
     # LiteLLM exception hierarchy mirrors OpenAI's
-    if isinstance(exc, (litellm.RateLimitError,
-                        litellm.ServiceUnavailableError,
-                        litellm.InternalServerError,
-                        litellm.Timeout)):
+    if isinstance(
+        exc,
+        (
+            litellm.RateLimitError,
+            litellm.ServiceUnavailableError,
+            litellm.InternalServerError,
+            litellm.Timeout,
+        ),
+    ):
         return True
     if isinstance(exc, (ConnectionError, TimeoutError, OSError)):
         return True
@@ -237,36 +243,47 @@ async def _classify_one(
     retryable_call = retrier(_call_and_parse)
 
     async with semaphore:
+        t0 = time.perf_counter()
         try:
             result = await retryable_call(
-                system_prompt, user_message, ticket.ticket_id,
+                system_prompt,
+                user_message,
+                ticket.ticket_id,
             )
+            elapsed = time.perf_counter() - t0
             logger.debug(
                 "%s classified: category=%s priority=%s confidence=%s",
-                ticket.ticket_id, result.category, result.priority, result.confidence,
+                ticket.ticket_id,
+                result.category,
+                result.priority,
+                result.confidence,
             )
-            return result
+            return result.model_copy(update={"processing_seconds": elapsed})
 
         except RetryError as exc:
             logger.error(
                 "%s: all attempts exhausted, returning fallback. Last error: %s",
-                ticket.ticket_id, exc.last_attempt.exception(),
+                ticket.ticket_id,
+                exc.last_attempt.exception(),
             )
         except Exception as exc:
             # Non-retryable error (e.g. 401 auth failure)
             logger.error(
                 "%s: non-retryable error, returning fallback: %s",
-                ticket.ticket_id, exc,
+                ticket.ticket_id,
+                exc,
             )
 
-    return TriageResult(
-        ticket_id=ticket.ticket_id,
-        category="unknown",
-        priority="medium",
-        response="Thank you for contacting Steadfast support. We've received your ticket and a team member will follow up shortly.",
-        confidence=0.0,
-        flags=["llm_failure"],
-    )
+        elapsed = time.perf_counter() - t0
+        return TriageResult(
+            ticket_id=ticket.ticket_id,
+            category="unknown",
+            priority="medium",
+            response="Thank you for contacting Steadfast support. We've received your ticket and a team member will follow up shortly.",
+            confidence=0.0,
+            flags=["llm_failure"],
+            processing_seconds=elapsed,
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -296,10 +313,7 @@ async def classify_tickets(
     logger.info("Using model: %s (concurrency=%d)", MODEL, concurrency)
 
     semaphore = asyncio.Semaphore(concurrency)
-    tasks = [
-        _classify_one(ticket, retriever, semaphore)
-        for ticket in tickets
-    ]
+    tasks = [_classify_one(ticket, retriever, semaphore) for ticket in tickets]
 
     results = await asyncio.gather(*tasks)
     logger.info(

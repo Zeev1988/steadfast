@@ -73,22 +73,24 @@ def load_knowledge_base(path: str | Path) -> list[KBEntry]:
 
     missing = _KB_REQUIRED_COLS - set(df.columns)
     if missing:
-        raise ValueError(
-            f"KB CSV is missing expected columns: {sorted(missing)}"
-        )
+        raise ValueError(f"KB CSV is missing expected columns: {sorted(missing)}")
 
     # Row index + 2 ≈ spreadsheet line number (header is row 1).
     sub = df.loc[:, list(KB_COL_ORDER)]
     for spreadsheet_row_no, (_, row_series) in enumerate(sub.iterrows(), start=2):
         row = {_k: _scalar_to_str(row_series[_k]) for _k in KB_COL_ORDER}
         if not all(row.get(c) for c in ("ticket_id", "subject", "body")):
-            logger.warning("KB row %d skipped — empty required field", spreadsheet_row_no)
+            logger.warning(
+                "KB row %d skipped — empty required field", spreadsheet_row_no
+            )
             skipped += 1
             continue
 
         entries.append(KBEntry(**{k: row[k] for k in KB_COL_ORDER}))
 
-    logger.info("Loaded %d KB entries (%d skipped) from %s", len(entries), skipped, path)
+    logger.info(
+        "Loaded %d KB entries (%d skipped) from %s", len(entries), skipped, path
+    )
     return entries
 
 
@@ -124,9 +126,7 @@ def load_tickets(path: str | Path) -> list[Ticket]:
             continue
         missing = _TICKET_REQUIRED_KEYS - set(obj.keys())
         if missing:
-            logger.warning(
-                "Ticket #%d skipped — missing keys: %s", i, sorted(missing)
-            )
+            logger.warning("Ticket #%d skipped — missing keys: %s", i, sorted(missing))
             skipped += 1
             continue
 

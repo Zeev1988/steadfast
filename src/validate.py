@@ -44,6 +44,7 @@ FALLBACK_PRIORITY = "medium"
 # Validation report
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ValidationReport:
     """Aggregated validation statistics for a batch of results."""
@@ -74,6 +75,7 @@ class ValidationReport:
 # Single-result validation
 # ---------------------------------------------------------------------------
 
+
 def _validate_one(result: TriageResult, report: ValidationReport) -> TriageResult:
     """Validate and fix a single TriageResult in place.
 
@@ -94,7 +96,9 @@ def _validate_one(result: TriageResult, report: ValidationReport) -> TriageResul
     if result.category not in VALID_CATEGORIES:
         logger.warning(
             "%s: invalid category %r → %r",
-            result.ticket_id, result.category, FALLBACK_CATEGORY,
+            result.ticket_id,
+            result.category,
+            FALLBACK_CATEGORY,
         )
         report.record_issue("invalid_category")
         result.category = FALLBACK_CATEGORY
@@ -105,7 +109,9 @@ def _validate_one(result: TriageResult, report: ValidationReport) -> TriageResul
     if result.priority not in VALID_PRIORITIES:
         logger.warning(
             "%s: invalid priority %r → %r",
-            result.ticket_id, result.priority, FALLBACK_PRIORITY,
+            result.ticket_id,
+            result.priority,
+            FALLBACK_PRIORITY,
         )
         report.record_issue("invalid_priority")
         result.priority = FALLBACK_PRIORITY
@@ -125,7 +131,8 @@ def _validate_one(result: TriageResult, report: ValidationReport) -> TriageResul
     elif len(result.response.strip()) < MIN_RESPONSE_LENGTH:
         logger.warning(
             "%s: response too short (%d chars) → flagged",
-            result.ticket_id, len(result.response.strip()),
+            result.ticket_id,
+            len(result.response.strip()),
         )
         report.record_issue("short_response")
         result.flags.append("short_response")
@@ -136,7 +143,8 @@ def _validate_one(result: TriageResult, report: ValidationReport) -> TriageResul
         if not (0.0 <= result.confidence <= 1.0):
             logger.warning(
                 "%s: confidence %s out of range → clamped",
-                result.ticket_id, result.confidence,
+                result.ticket_id,
+                result.confidence,
             )
             report.record_issue("confidence_out_of_range")
             result.confidence = max(0.0, min(1.0, result.confidence))
@@ -161,7 +169,10 @@ def _validate_one(result: TriageResult, report: ValidationReport) -> TriageResul
 # Public API
 # ---------------------------------------------------------------------------
 
-def validate_results(results: list[TriageResult]) -> tuple[list[TriageResult], ValidationReport]:
+
+def validate_results(
+    results: list[TriageResult],
+) -> tuple[list[TriageResult], ValidationReport]:
     """Validate a batch of TriageResults from Stage 3.
 
     Args:

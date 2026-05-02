@@ -18,6 +18,7 @@ import logging
 from pathlib import Path
 
 from agent import classify_tickets_sync
+from evaluate import evaluate_run
 from loader import inspect_kb, load_knowledge_base, load_tickets
 from postprocess import postprocess
 from preprocess import build_retriever, preprocess_kb
@@ -104,10 +105,7 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
     logger.info("=== Stage 2: Preprocess ===")
     processed_kb = preprocess_kb(kb_entries)
     retriever = build_retriever(processed_kb)
-    logger.info(
-        "BM25 index built over %d KB entries",
-        len(processed_kb)
-    )
+    logger.info("BM25 index built over %d KB entries", len(processed_kb))
     if tickets:
         sample_chunks = retriever(tickets[0])
         preview = (sample_chunks[0][:160] + "…") if sample_chunks else "(no chunks)"
@@ -153,6 +151,20 @@ def main() -> None:
     with output_path.open("w", encoding="utf-8") as fh:
         json.dump(results, fh, indent=2, ensure_ascii=False)
     logger.info("Results written to %s (%d tickets)", output_path, len(results))
+
+    if args.eval:
+        # Local import avoids circular deps when tooling imports pipeline.
+        metrics_path = output_path.with_name("eval_metrics.json")
+        report = evaluate_run(results, Path(args.input), kb_path=args.kb)
+        with metrics_path.open("w", encoding="utf-8") as mh:
+            json.dump(report, mh, indent=2, ensure_ascii=False)
+        logger.info(
+            "Eval metrics → %s (category_acc=%s priority_exact=%s priority_cost_mean=%s)",
+            metrics_path,
+            report["category_accuracy"],
+            report["priority_exact_accuracy"],
+            report["priority_cost_score_mean"],
+        )
 
 
 if __name__ == "__main__":

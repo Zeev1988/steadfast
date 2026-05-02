@@ -7,7 +7,7 @@ Decisions:
   keyword overlap with incoming tickets is the dominant retrieval signal.
 - Document string for indexing: subject + body + resolution — all three carry signal.
 - Chunk string for the LLM prompt: structured block with category, priority,
-  subject, and resolution; 
+  subject, and resolution;
   BM25 indexing still uses the full subject + body + resolution.
 - k = 3 default: matches prompt budget; callers can override.
 """
@@ -62,11 +62,18 @@ def preprocess_kb(entries: list[KBEntry]) -> list[KBEntry]:
         if e.body or e.resolution:
             kept.append(e)
         else:
-            logger.warning("KB entry %s dropped — empty body and resolution", e.ticket_id)
+            logger.warning(
+                "KB entry %s dropped — empty body and resolution", e.ticket_id
+            )
             dropped += 1
 
     if dropped:
-        logger.info("preprocess_kb: kept %d / %d entries (%d dropped)", len(kept), len(entries), dropped)
+        logger.info(
+            "preprocess_kb: kept %d / %d entries (%d dropped)",
+            len(kept),
+            len(entries),
+            dropped,
+        )
     else:
         logger.info("preprocess_kb: all %d entries kept", len(kept))
 
@@ -108,7 +115,7 @@ def build_retriever(
 
         scores = index.get_scores(query_tokens)
         # argsort descending; take top k (fewer if KB is smaller than k)
-        top_k = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[: k]
+        top_k = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
         return [chunks[i] for i in top_k]
 
     return retriever

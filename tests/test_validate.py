@@ -89,8 +89,11 @@ class TestValidResults:
 
     def test_valid_result_preserves_all_fields(self) -> None:
         result = _make_result(
-            ticket_id="T-99", category="integration", priority="critical",
-            response=GOOD_RESPONSE, confidence=0.95,
+            ticket_id="T-99",
+            category="integration",
+            priority="critical",
+            response=GOOD_RESPONSE,
+            confidence=0.95,
         )
         validated, _ = validate_results([result])
         r = validated[0]
@@ -236,8 +239,12 @@ class TestConfidenceValidation:
         # Use model_construct to bypass Pydantic's ge/le constraint —
         # simulates a raw dict from Stage 3 parse that slipped through.
         result = TriageResult.model_construct(
-            ticket_id="T-OOR-1", category="bug", priority="high",
-            response=GOOD_RESPONSE, confidence=1.5, flags=[],
+            ticket_id="T-OOR-1",
+            category="bug",
+            priority="high",
+            response=GOOD_RESPONSE,
+            confidence=1.5,
+            flags=[],
         )
         validated, report = validate_results([result])
         assert validated[0].confidence == 1.0
@@ -245,8 +252,12 @@ class TestConfidenceValidation:
 
     def test_confidence_below_zero_clamped(self) -> None:
         result = TriageResult.model_construct(
-            ticket_id="T-OOR-2", category="bug", priority="high",
-            response=GOOD_RESPONSE, confidence=-0.3, flags=[],
+            ticket_id="T-OOR-2",
+            category="bug",
+            priority="high",
+            response=GOOD_RESPONSE,
+            confidence=-0.3,
+            flags=[],
         )
         validated, report = validate_results([result])
         assert validated[0].confidence == 0.0
@@ -261,8 +272,11 @@ class TestConfidenceValidation:
 class TestLLMFailurePassthrough:
     def test_llm_failure_passed_through_unchanged(self) -> None:
         result = _make_result(
-            category="unknown", priority="medium",
-            response="Fallback.", confidence=0.0, flags=["llm_failure"],
+            category="unknown",
+            priority="medium",
+            response="Fallback.",
+            confidence=0.0,
+            flags=["llm_failure"],
         )
         validated, report = validate_results([result])
         assert validated[0].flags == ["llm_failure"]
@@ -274,8 +288,12 @@ class TestLLMFailurePassthrough:
         """An llm_failure result with invalid category should NOT get
         an additional invalid_category flag — we skip validation entirely."""
         result = TriageResult.model_construct(
-            ticket_id="T-LLM-2", category="garbage", priority="nonsense",
-            response="x", confidence=5.0, flags=["llm_failure"],
+            ticket_id="T-LLM-2",
+            category="garbage",
+            priority="nonsense",
+            response="x",
+            confidence=5.0,
+            flags=["llm_failure"],
         )
         validated, _ = validate_results([result])
         assert validated[0].flags == ["llm_failure"]
@@ -291,8 +309,12 @@ class TestMultipleIssues:
     def test_all_fixable_fields_wrong(self) -> None:
         # Use model_construct to allow out-of-range confidence (2.0)
         result = TriageResult.model_construct(
-            ticket_id="T-MULTI", category="oops", priority="mega",
-            response="Hi.", confidence=2.0, flags=[],
+            ticket_id="T-MULTI",
+            category="oops",
+            priority="mega",
+            response="Hi.",
+            confidence=2.0,
+            flags=[],
         )
         validated, report = validate_results([result])
         r = validated[0]
@@ -315,10 +337,10 @@ class TestMultipleIssues:
 class TestBatchValidation:
     def test_batch_stats_correct(self) -> None:
         batch = [
-            _make_result(ticket_id="B-1"),                              # valid
-            _make_result(ticket_id="B-2", category="wrong"),            # 1 fix
-            _make_result(ticket_id="B-3"),                              # valid
-            _make_result(ticket_id="B-4", flags=["llm_failure"]),       # passthrough
+            _make_result(ticket_id="B-1"),  # valid
+            _make_result(ticket_id="B-2", category="wrong"),  # 1 fix
+            _make_result(ticket_id="B-3"),  # valid
+            _make_result(ticket_id="B-4", flags=["llm_failure"]),  # passthrough
         ]
         validated, report = validate_results(batch)
         assert report.total == 4

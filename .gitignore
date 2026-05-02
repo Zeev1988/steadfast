@@ -1,5 +1,8 @@
 .env
 
+# JetBrains / PyCharm / IntelliJ
+.idea/
+
 # Bytecode / caches
 __pycache__/
 *.py[cod]

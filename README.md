@@ -147,7 +147,7 @@ The pipeline must produce a JSON result per ticket:
   agent.py             # stage 3 (LLM classification)
   validate.py          # stage 4
   postprocess.py       # stage 5
-  evaluate.py          # stage 6
+  evaluate/             # stage 6 (evaluation.py, metrics/, labels, …)
   analyze.py           # stage 7 (error analysis)
 /data
   knowledge_base.csv   # 300 historical tickets
