@@ -210,19 +210,19 @@ class TestBillingRule:
 
 
 # ---------------------------------------------------------------------------
-# Rule 6: Data loss / breach → critical
+# Rule 5: Data loss / breach → bump to high (V2: tightened regex, capped at high)
 # ---------------------------------------------------------------------------
 
 
 class TestCriticalKeywords:
-    def test_data_loss_bumps_to_critical(self) -> None:
+    def test_active_data_loss_bumps_to_high(self) -> None:
         ticket = _make_ticket(
             subject="Files disappearing",
-            body="Files uploaded to tasks are disappearing after 24 hours. Data loss.",
+            body="Files uploaded to tasks are disappearing after 24 hours.",
         )
-        result = _make_result(category="bug", priority="high")
+        result = _make_result(category="bug", priority="medium")
         postprocess([result], [ticket])
-        assert result.priority == "critical"
+        assert result.priority == "high"
         assert any("priority_bumped" in f for f in result.flags)
 
     def test_security_breach(self) -> None:
@@ -230,45 +230,67 @@ class TestCriticalKeywords:
             subject="Account compromised",
             body="Unauthorized access detected. Security breach.",
         )
-        result = _make_result(category="security", priority="high")
+        result = _make_result(category="security", priority="medium")
         postprocess([result], [ticket])
-        assert result.priority == "critical"
+        assert result.priority == "high"
 
-    def test_already_critical_unchanged(self) -> None:
+    def test_already_high_unchanged(self) -> None:
         ticket = _make_ticket(
             subject="Data loss",
-            body="Files disappearing. Losing important deliverables.",
+            body="Files are disappearing. Losing important deliverables.",
         )
-        result = _make_result(category="bug", priority="critical")
+        result = _make_result(category="bug", priority="high")
         postprocess([result], [ticket])
-        assert result.priority == "critical"
-        # No bump flag since already critical
+        assert result.priority == "high"
+        # No bump flag since already at target
         assert not any("priority_bumped" in f for f in result.flags)
+
+    def test_hypothetical_data_question_not_triggered(self) -> None:
+        """V2 fix: 'What happens to our data if we cancel?' should NOT trigger."""
+        ticket = _make_ticket(
+            subject="What happens to our data if we cancel?",
+            body="We're considering cancellation. What's your data retention policy?",
+        )
+        result = _make_result(category="account", priority="low")
+        postprocess([result], [ticket])
+        assert result.priority == "low"
+        assert not any("data_loss" in f for f in result.flags)
 
 
 # ---------------------------------------------------------------------------
-# Rule 7: Large user impact → at least high
+# Rule 6: Large user impact → bump low to medium (V2: capped at medium)
 # ---------------------------------------------------------------------------
 
 
 class TestHighImpact:
-    def test_100_users_bumps_to_high(self) -> None:
+    def test_100_users_bumps_low_to_medium(self) -> None:
         ticket = _make_ticket(
             subject="Dashboard slow",
             body="Affecting our 100-person team. Pages take forever.",
         )
-        result = _make_result(category="performance", priority="medium")
+        result = _make_result(category="performance", priority="low")
         postprocess([result], [ticket])
-        assert result.priority == "high"
+        assert result.priority == "medium"
 
-    def test_entire_team(self) -> None:
+    def test_entire_team_bumps_low_to_medium(self) -> None:
         ticket = _make_ticket(
             subject="Feature broken",
             body="This is blocking our entire team from working.",
         )
         result = _make_result(category="bug", priority="low")
         postprocess([result], [ticket])
-        assert result.priority == "high"
+        assert result.priority == "medium"
+
+    def test_already_medium_unchanged(self) -> None:
+        """V2: medium stays medium — rule only bumps low→medium."""
+        ticket = _make_ticket(
+            subject="Dashboard slow",
+            body="Affecting our 100-person team. Pages take forever.",
+        )
+        result = _make_result(category="performance", priority="medium")
+        postprocess([result], [ticket])
+        assert result.priority == "medium"
+        assert not any("priority_bumped" in f for f in result.flags)
 
     def test_small_impact_unchanged(self) -> None:
         ticket = _make_ticket(
@@ -281,18 +303,18 @@ class TestHighImpact:
 
 
 # ---------------------------------------------------------------------------
-# Rule 8: Enterprise + high severity → critical
+# Rule 7: Enterprise + low → medium (V2: softened from high→critical)
 # ---------------------------------------------------------------------------
 
 
 class TestEnterpriseEscalation:
-    def test_enterprise_high_bug_becomes_critical(self) -> None:
+    def test_enterprise_low_bumps_to_medium(self) -> None:
         ticket = _make_ticket(
-            plan="Enterprise", subject="App crash", body="System error."
+            plan="Enterprise", subject="Minor question", body="Small issue."
         )
-        result = _make_result(category="bug", priority="high")
+        result = _make_result(category="bug", priority="low")
         postprocess([result], [ticket])
-        assert result.priority == "critical"
+        assert result.priority == "medium"
         assert any("enterprise" in f for f in result.flags)
 
     def test_enterprise_medium_not_bumped(self) -> None:
@@ -301,24 +323,24 @@ class TestEnterpriseEscalation:
         )
         result = _make_result(category="bug", priority="medium")
         postprocess([result], [ticket])
-        # Rule 8 only fires for high → critical, not medium → high
-        # (unless another rule bumped it first)
         assert result.priority == "medium"
+        assert not any("enterprise" in f for f in result.flags)
 
-    def test_growth_high_not_bumped(self) -> None:
-        ticket = _make_ticket(plan="Growth", subject="App crash", body="System error.")
+    def test_enterprise_high_not_bumped(self) -> None:
+        """V2: Enterprise + high no longer escalates to critical."""
+        ticket = _make_ticket(
+            plan="Enterprise", subject="App crash", body="System error."
+        )
         result = _make_result(category="bug", priority="high")
         postprocess([result], [ticket])
         assert result.priority == "high"
+        assert not any("enterprise" in f for f in result.flags)
 
-    def test_enterprise_feature_request_not_bumped(self) -> None:
-        ticket = _make_ticket(
-            plan="Enterprise", subject="Feature idea", body="Would be nice."
-        )
-        result = _make_result(category="feature_request", priority="high")
+    def test_growth_low_not_bumped(self) -> None:
+        ticket = _make_ticket(plan="Growth", subject="Minor issue", body="Small thing.")
+        result = _make_result(category="bug", priority="low")
         postprocess([result], [ticket])
-        # feature_request not in the escalation categories
-        assert result.priority == "high"
+        assert result.priority == "low"
 
 
 # ---------------------------------------------------------------------------
@@ -405,7 +427,10 @@ class TestBatchBehavior:
 
     def test_multiple_rules_can_fire(self) -> None:
         """An Enterprise SSO ticket classified as security/medium should get
-        category corrected to integration AND priority eventually bumped."""
+        category corrected to integration.  V2 priority rules are softer:
+        high_impact only bumps low→medium (already medium → no change),
+        enterprise only bumps low→medium (already medium → no change).
+        So priority stays at medium."""
         ticket = _make_ticket(
             plan="Enterprise",
             subject="SSO broken",
@@ -415,6 +440,5 @@ class TestBatchBehavior:
         postprocess([result], [ticket])
         # Rule 2: security → integration
         assert result.category == "integration"
-        # Rule 7: "entire team" → high
-        # Rule 8: Enterprise + high + integration → critical
-        assert result.priority == "critical"
+        # V2: high_impact caps at medium, enterprise caps at medium — no bump
+        assert result.priority == "medium"

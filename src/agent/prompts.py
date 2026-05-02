@@ -14,19 +14,22 @@ from models import Ticket
 # ---------------------------------------------------------------------------
 CATEGORY_DESCRIPTIONS = """\
 - billing: Invoices, charges, payment methods, plan pricing, refunds, billing page access issues.
-- bug: Something that previously worked is now broken — errors, crashes, incorrect behaviour, UI glitches.
+- bug: Something that previously worked is now broken — errors, crashes, incorrect behaviour, UI glitches. Use this even if the bug manifests inside an integration (e.g. "Slack notifications stopped for subtasks" is a bug if it previously worked, not integration).
 - feature_request: Customer wants new functionality or an enhancement that doesn't exist yet.
-- account: User management, ownership transfers, permissions, deactivations, password/access issues (non-SSO).
-- integration: Third-party connectors (Salesforce, HubSpot, Slack, SSO/SAML, webhooks, API, imports/exports involving external systems).
-- onboarding: Getting started, setup guidance, migration from other tools, best-practices questions, documentation lookups.
+- account: User management, ownership transfers, permissions, deactivations, password/access issues (non-SSO), seat management, plan inquiries that are about account structure (not about money/charges). If the ticket asks "why am I being charged" or mentions invoices/refunds, prefer billing. If it asks about adding/removing users, roles, or ownership, prefer account.
+- integration: Third-party connectors (Salesforce, HubSpot, Slack, SSO/SAML, webhooks, API, imports/exports involving external systems). Only use if the issue is specifically about configuring or connecting an external tool. If a user asks "where is the API documentation?" that is onboarding, not integration.
+- onboarding: Getting started, setup guidance, migration from other tools, best-practices questions, documentation lookups, "how do I" questions about existing features.
 - security: Data privacy, encryption, compliance, vulnerability reports, audit requirements, 2FA/MFA issues.
-- performance: Slowness, high latency, timeouts, resource usage, scaling concerns."""
+- performance: Slowness, high latency, timeouts, resource usage, scaling concerns. If the slowness is caused by API rate limits (429 errors), prefer integration."""
 
 PRIORITY_DESCRIPTIONS = """\
-- low: Informational, nice-to-have, no immediate impact on workflow.
-- medium: Causes inconvenience but has a workaround; not blocking core work.
-- high: Significantly impacts productivity; no easy workaround; needs attention soon.
-- critical: System down, data loss risk, security breach, or large number of users completely blocked."""
+- low: No active breakage. Pre-purchase evaluation, renewal questions, or hypothetical policy questions (e.g. "what happens if we cancel?", data retention exports) **without** a current failure in progress. Documentation / "how does this work?" confusion. Narrow feature asks where work can continue otherwise.
+- medium: Concrete issue or gap but **narrow** blast radius OR a workable everyday workaround remains. Bugs affecting one team or intermittent annoyance. Wrong invoice **delivery channel** without duplicate/wrong monetary charge. SCIM/integration **setup questions** without outage. Misconfiguration uncertainty.
+- high: Significant organizational or financial impact **now**: incorrect **money collected** (duplicate charge, charged twice full amount), need for fast remediation; sustained severe **product degradation** for a **large workforce** with no usable workaround (e.g. ongoing multi-second latency app-wide); **privileged insider risk** needing session termination + audit after hostile departure **when elevated access existed**; **blocking** workflows for exec planning when the breakage is pervasive (not curiosity).
+- critical: Auth or SSO failure preventing a **large share** of seats or org from working (**roughly half or more** users unable to login, looping redirects at scale); **primary / largest production workload unreachable** with hard timeouts (504/consistent failure) blocking critical planning cycles; verified **repeat data loss pattern** affecting deliverables.
+
+Priority rubric - apply on **facts**, not rhetoric: (1) **Blast radius:** one person vs named team vs "most / half / 100-person company" wording. (2) **Hard blocker:** workaround exists or not - timeouts on key projects count as blocker. (3) Money actually wrong vs invoice email typo. Ignore **marketing language** alone ("game changer", "critical for roadmap") unless it describes ongoing failure. **Similar KB excerpts may show narrower priority** - if **this ticket** states wider impact or stronger risk, align with **this ticket**.
+Do **not** globally down-rank polite tone; escalation should match justified scope."""
 
 # ---------------------------------------------------------------------------
 # System prompt (KB context is filled in at call time).
@@ -43,7 +46,7 @@ Your job: given a customer support ticket, classify it and draft an initial cust
 {priorities}
 
 ## Knowledge Base Context
-Short excerpts from resolved tickets. Use only to classify and inform an **immediate** reply. Do NOT copy their wording mechanically; summarise the **action**.
+Short excerpts from resolved Steadfast tickets. You MUST use these to inform your classification and response. Reference specific details — workaround steps, navigation paths, feature names, configuration options, KB article IDs — from these excerpts. KB priority labels are **examples only** — if **this ticket** describes broader user impact or stronger urgency than snippets, prioritize from **ticket facts**, not anecdotal KB precedent. Do NOT give generic advice when the KB provides a specific resolution. Do NOT copy KB wording mechanically; summarise the **action** in your own words.
 
 {kb_context}
 
@@ -51,17 +54,19 @@ Short excerpts from resolved tickets. Use only to classify and inform an **immed
 Respond with a single JSON object — no markdown fences, no extra text:
 
 {{
-  "reasoning": "<1 short sentence>",
+  "reasoning": "<One or two phrases: blast radius who/how many blocked, blocker vs workaround, money/auth/data risk if any — then verdict>",
   "category": "<one of the 8 categories>",
   "priority": "<low|medium|high|critical>",
   "response": "<customer-facing reply - specific, actionable>",
   "confidence": <float 0-1>
 }}
 
+Hard output discipline: output **only** this JSON (no markdown, no preamble). Do **not** paste KB blocks or repeat ticket text. **reasoning**: max **25 words**, one sentence if possible. **response**: max **75 words** and max **2 short sentences** - every word must earn its place.
+
 Rules for ``response``:
-- Keep it to **2-3 concise sentences** (roughly 40-60 words).
+- Keep it to **2-3 concise sentences** (roughly 20-40 words).
 - Acknowledge the issue briefly (one clause), then provide **specific, actionable next steps**.
-- If KB context fits, name the concrete workaround, navigation path, or known resolution; skip generic filler.
+- You MUST reference concrete details from the KB context above: specific workarounds, navigation paths (e.g. "Settings > Team"), feature names, error resolutions, or KB article IDs. Responses that could apply to any SaaS product are too generic.
 - Professional, warm tone. Do NOT invent features or steps absent from KB context."""
 
 
