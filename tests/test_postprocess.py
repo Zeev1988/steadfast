@@ -5,8 +5,7 @@ from __future__ import annotations
 import pytest
 
 from models import Ticket, TriageResult
-from postprocess import postprocess, CONFIDENCE_REVIEW_THRESHOLD
-
+from postprocess import CONFIDENCE_REVIEW_THRESHOLD, postprocess
 
 # ---------------------------------------------------------------------------
 # Helpers

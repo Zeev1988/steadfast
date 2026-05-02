@@ -23,7 +23,7 @@ from __future__ import annotations
 import logging
 import re
 
-from models import TriageResult, Ticket, VALID_CATEGORIES, VALID_PRIORITIES
+from models import Ticket, TriageResult
 
 logger = logging.getLogger(__name__)
 
@@ -281,7 +281,7 @@ def postprocess(
         )
 
     corrections = 0
-    for result, ticket in zip(results, tickets):
+    for result, ticket in zip(results, tickets, strict=True):
         # Skip results that already failed completely
         if "llm_failure" in result.flags:
             continue
