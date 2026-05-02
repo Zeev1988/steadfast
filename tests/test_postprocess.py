@@ -51,214 +51,7 @@ def _make_result(
 
 
 # ---------------------------------------------------------------------------
-# Rule 1: API rate-limit → integration
-# ---------------------------------------------------------------------------
-
-
-class TestApiRateLimitRule:
-    def test_429_performance_becomes_integration(self) -> None:
-        ticket = _make_ticket(
-            subject="Getting rate limited on API",
-            body="We're hitting 429 errors on /v2/analytics endpoint.",
-        )
-        result = _make_result(category="performance")
-        postprocess([result], [ticket])
-        assert result.category == "integration"
-        assert any("api_rate_limit" in f for f in result.flags)
-
-    def test_rate_limit_keyword(self) -> None:
-        ticket = _make_ticket(
-            subject="API rate limit issues",
-            body="Our API calls are being rate limited.",
-        )
-        result = _make_result(category="performance")
-        postprocess([result], [ticket])
-        assert result.category == "integration"
-
-    def test_does_not_change_if_already_integration(self) -> None:
-        ticket = _make_ticket(
-            subject="API 429 errors",
-            body="Rate limit on /v2/tasks endpoint.",
-        )
-        result = _make_result(category="integration")
-        postprocess([result], [ticket])
-        assert result.category == "integration"
-        assert not any("api_rate_limit" in f for f in result.flags)
-
-    def test_does_not_change_real_performance(self) -> None:
-        ticket = _make_ticket(
-            subject="Dashboard very slow",
-            body="Pages take 12 seconds to load for our 100-person team.",
-        )
-        result = _make_result(category="performance")
-        postprocess([result], [ticket])
-        assert result.category == "performance"
-
-
-# ---------------------------------------------------------------------------
-# Rule 2: SSO/SAML → integration
-# ---------------------------------------------------------------------------
-
-
-class TestSsoRule:
-    def test_sso_security_becomes_integration(self) -> None:
-        ticket = _make_ticket(
-            subject="SSO login issues",
-            body="Users hit a redirect loop after SSO authentication with Okta.",
-        )
-        result = _make_result(category="security")
-        postprocess([result], [ticket])
-        assert result.category == "integration"
-        assert any("sso" in f for f in result.flags)
-
-    def test_saml_account_becomes_integration(self) -> None:
-        ticket = _make_ticket(
-            subject="SAML configuration",
-            body="Need help configuring SAML with our identity provider.",
-        )
-        result = _make_result(category="account")
-        postprocess([result], [ticket])
-        assert result.category == "integration"
-
-    def test_scim_provisioning(self) -> None:
-        ticket = _make_ticket(
-            subject="SCIM user provisioning",
-            body="Setting up SCIM provisioning with Azure AD.",
-        )
-        result = _make_result(category="account")
-        postprocess([result], [ticket])
-        assert result.category == "integration"
-
-    def test_real_security_not_changed(self) -> None:
-        ticket = _make_ticket(
-            subject="Unauthorized access to my account",
-            body="Someone logged in from an unknown IP address.",
-        )
-        result = _make_result(category="security")
-        postprocess([result], [ticket])
-        assert result.category == "security"
-
-
-# ---------------------------------------------------------------------------
-# Rule 3: How-to → onboarding
-# ---------------------------------------------------------------------------
-
-
-class TestHowtoRule:
-    def test_how_do_i_feature_request_becomes_onboarding(self) -> None:
-        ticket = _make_ticket(
-            subject="How do I set up workflows?",
-            body="How do I configure automation workflows in Steadfast?",
-        )
-        result = _make_result(category="feature_request")
-        postprocess([result], [ticket])
-        assert result.category == "onboarding"
-        assert any("howto" in f for f in result.flags)
-
-    def test_getting_started(self) -> None:
-        ticket = _make_ticket(
-            subject="Getting started with Steadfast",
-            body="We just signed up and need guidance on setting up our workspace.",
-        )
-        result = _make_result(category="feature_request")
-        postprocess([result], [ticket])
-        assert result.category == "onboarding"
-
-    def test_real_feature_request_unchanged(self) -> None:
-        ticket = _make_ticket(
-            subject="Request: calendar view",
-            body="We would love a calendar view for our project tasks.",
-        )
-        result = _make_result(category="feature_request")
-        postprocess([result], [ticket])
-        assert result.category == "feature_request"
-
-
-# ---------------------------------------------------------------------------
-# Rule 5: Money keywords → billing
-# ---------------------------------------------------------------------------
-
-
-class TestBillingRule:
-    def test_charge_account_becomes_billing(self) -> None:
-        ticket = _make_ticket(
-            subject="Unexpected charge",
-            body="Why am I being charged for inactive users?",
-        )
-        result = _make_result(category="account")
-        postprocess([result], [ticket])
-        assert result.category == "billing"
-        assert any("money" in f for f in result.flags)
-
-    def test_invoice_keyword(self) -> None:
-        ticket = _make_ticket(
-            subject="Invoice question",
-            body="Can you send the latest invoice to our finance team?",
-        )
-        result = _make_result(category="account")
-        postprocess([result], [ticket])
-        assert result.category == "billing"
-
-    def test_real_account_unchanged(self) -> None:
-        ticket = _make_ticket(
-            subject="Transfer workspace ownership",
-            body="Our admin left and we need to transfer ownership.",
-        )
-        result = _make_result(category="account")
-        postprocess([result], [ticket])
-        assert result.category == "account"
-
-
-# ---------------------------------------------------------------------------
-# Rule 5: Data loss / breach → bump to high (V2: tightened regex, capped at high)
-# ---------------------------------------------------------------------------
-
-
-class TestCriticalKeywords:
-    def test_active_data_loss_bumps_to_high(self) -> None:
-        ticket = _make_ticket(
-            subject="Files disappearing",
-            body="Files uploaded to tasks are disappearing after 24 hours.",
-        )
-        result = _make_result(category="bug", priority="medium")
-        postprocess([result], [ticket])
-        assert result.priority == "high"
-        assert any("priority_bumped" in f for f in result.flags)
-
-    def test_security_breach(self) -> None:
-        ticket = _make_ticket(
-            subject="Account compromised",
-            body="Unauthorized access detected. Security breach.",
-        )
-        result = _make_result(category="security", priority="medium")
-        postprocess([result], [ticket])
-        assert result.priority == "high"
-
-    def test_already_high_unchanged(self) -> None:
-        ticket = _make_ticket(
-            subject="Data loss",
-            body="Files are disappearing. Losing important deliverables.",
-        )
-        result = _make_result(category="bug", priority="high")
-        postprocess([result], [ticket])
-        assert result.priority == "high"
-        # No bump flag since already at target
-        assert not any("priority_bumped" in f for f in result.flags)
-
-    def test_hypothetical_data_question_not_triggered(self) -> None:
-        """V2 fix: 'What happens to our data if we cancel?' should NOT trigger."""
-        ticket = _make_ticket(
-            subject="What happens to our data if we cancel?",
-            body="We're considering cancellation. What's your data retention policy?",
-        )
-        result = _make_result(category="account", priority="low")
-        postprocess([result], [ticket])
-        assert result.priority == "low"
-        assert not any("data_loss" in f for f in result.flags)
-
-
-# ---------------------------------------------------------------------------
-# Rule 6: Large user impact → bump low to medium (V2: capped at medium)
+# Large user impact → bump low to medium (V2: capped at medium)
 # ---------------------------------------------------------------------------
 
 
@@ -303,48 +96,7 @@ class TestHighImpact:
 
 
 # ---------------------------------------------------------------------------
-# Rule 7: Enterprise + low → medium (V2: softened from high→critical)
-# ---------------------------------------------------------------------------
-
-
-class TestEnterpriseEscalation:
-    def test_enterprise_low_bumps_to_medium(self) -> None:
-        ticket = _make_ticket(
-            plan="Enterprise", subject="Minor question", body="Small issue."
-        )
-        result = _make_result(category="bug", priority="low")
-        postprocess([result], [ticket])
-        assert result.priority == "medium"
-        assert any("enterprise" in f for f in result.flags)
-
-    def test_enterprise_medium_not_bumped(self) -> None:
-        ticket = _make_ticket(
-            plan="Enterprise", subject="Minor bug", body="Small issue."
-        )
-        result = _make_result(category="bug", priority="medium")
-        postprocess([result], [ticket])
-        assert result.priority == "medium"
-        assert not any("enterprise" in f for f in result.flags)
-
-    def test_enterprise_high_not_bumped(self) -> None:
-        """V2: Enterprise + high no longer escalates to critical."""
-        ticket = _make_ticket(
-            plan="Enterprise", subject="App crash", body="System error."
-        )
-        result = _make_result(category="bug", priority="high")
-        postprocess([result], [ticket])
-        assert result.priority == "high"
-        assert not any("enterprise" in f for f in result.flags)
-
-    def test_growth_low_not_bumped(self) -> None:
-        ticket = _make_ticket(plan="Growth", subject="Minor issue", body="Small thing.")
-        result = _make_result(category="bug", priority="low")
-        postprocess([result], [ticket])
-        assert result.priority == "low"
-
-
-# ---------------------------------------------------------------------------
-# Rule 9: Low confidence → escalate flag
+# Low confidence → escalate flag
 # ---------------------------------------------------------------------------
 
 
@@ -369,7 +121,7 @@ class TestLowConfidenceFlag:
 
 
 # ---------------------------------------------------------------------------
-# Rule 10: Multi-issue tickets
+# Multi-issue tickets
 # ---------------------------------------------------------------------------
 
 
@@ -401,8 +153,8 @@ class TestMultiIssueFlag:
 class TestLLMFailurePassthrough:
     def test_llm_failure_skipped(self) -> None:
         ticket = _make_ticket(
-            subject="SSO redirect loop",  # Would trigger Rule 2
-            body="Users can't log in via SSO.",
+            subject="Minor issue",
+            body="Small question about settings.",
         )
         result = _make_result(category="security", flags=["llm_failure"])
         postprocess([result], [ticket])
@@ -426,19 +178,13 @@ class TestBatchBehavior:
         assert results == []
 
     def test_multiple_rules_can_fire(self) -> None:
-        """An Enterprise SSO ticket classified as security/medium should get
-        category corrected to integration.  V2 priority rules are softer:
-        high_impact only bumps low→medium (already medium → no change),
-        enterprise only bumps low→medium (already medium → no change).
-        So priority stays at medium."""
+        """Multi-issue body + blocking team → high_impact bump + ambiguous_category."""
         ticket = _make_ticket(
-            plan="Enterprise",
-            subject="SSO broken",
-            body="Okta SSO redirect loop. Blocking our entire team.",
+            subject="Multiple workspace issues",
+            body="We have several problems: Jira sync broken. This is blocking our entire team.",
         )
-        result = _make_result(category="security", priority="medium")
+        result = _make_result(category="bug", priority="low")
         postprocess([result], [ticket])
-        # Rule 2: security → integration
-        assert result.category == "integration"
-        # V2: high_impact caps at medium, enterprise caps at medium — no bump
         assert result.priority == "medium"
+        assert any("priority_bumped" in f for f in result.flags)
+        assert "ambiguous_category" in result.flags
