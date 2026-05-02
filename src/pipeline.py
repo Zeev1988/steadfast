@@ -6,16 +6,24 @@ Usage:
   python src/pipeline.py --input FILE             # run on a custom ticket JSON
   python src/pipeline.py --eval                   # pipeline + evaluation + error analysis
   python src/pipeline.py --eval --limit N         # same, but process only first N tickets
+
+Model selection is handled in agent.py via the LLM_MODEL env var in .env.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+from agent import classify_tickets_sync
 from loader import inspect_kb, load_knowledge_base, load_tickets
 from preprocess import build_retriever, preprocess_kb
+
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -108,13 +116,29 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
             len(sample_chunks),
             preview,
         )
-    return []
+
+    # ------------------------------------------------------------------
+    # Stage 3 — LLM Classification
+    # ------------------------------------------------------------------
+    logger.info("=== Stage 3: LLM Classification ===")
+    results = classify_tickets_sync(tickets, retriever)
+    logger.info("Classified %d tickets", len(results))
+
+    # Convert to dicts for JSON serialisation
+    return [r.to_dict() for r in results]
 
 
 def main() -> None:
     parser = build_arg_parser()
     args = parser.parse_args()
-    run_pipeline(args)
+    results = run_pipeline(args)
+
+    # Write results to output file
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as fh:
+        json.dump(results, fh, indent=2, ensure_ascii=False)
+    logger.info("Results written to %s (%d tickets)", output_path, len(results))
 
 
 if __name__ == "__main__":
