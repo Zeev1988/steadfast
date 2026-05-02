@@ -18,6 +18,7 @@ import logging
 from pathlib import Path
 
 from agent import classify_tickets_sync
+from analyze import analyze_errors
 from evaluate import evaluate_run
 from loader import inspect_kb, load_knowledge_base, load_tickets
 from postprocess import postprocess
@@ -153,7 +154,9 @@ def main() -> None:
     logger.info("Results written to %s (%d tickets)", output_path, len(results))
 
     if args.eval:
-        # Local import avoids circular deps when tooling imports pipeline.
+        # ------------------------------------------------------------------
+        # Stage 6 — Evaluate
+        # ------------------------------------------------------------------
         metrics_path = output_path.with_name("eval_metrics.json")
         report = evaluate_run(results, Path(args.input), kb_path=args.kb)
         with metrics_path.open("w", encoding="utf-8") as mh:
@@ -164,6 +167,20 @@ def main() -> None:
             report["category_accuracy"],
             report["priority_exact_accuracy"],
             report["priority_cost_score_mean"],
+        )
+
+        # ------------------------------------------------------------------
+        # Stage 7 — Error analysis
+        # ------------------------------------------------------------------
+        error_path = output_path.with_name("error_analysis.json")
+        error_report = analyze_errors(results, Path(args.input))
+        with error_path.open("w", encoding="utf-8") as eh:
+            json.dump(error_report, eh, indent=2, ensure_ascii=False)
+        logger.info(
+            "Error analysis → %s (%d/%d tickets with errors)",
+            error_path,
+            error_report["summary"]["total_with_errors"],
+            error_report["summary"]["total_evaluated"],
         )
 
 
