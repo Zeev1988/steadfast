@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 from agent import classify_tickets_sync
 from loader import inspect_kb, load_knowledge_base, load_tickets
 from preprocess import build_retriever, preprocess_kb
+from validate import validate_results
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
@@ -123,6 +124,13 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
     logger.info("=== Stage 3: LLM Classification ===")
     results = classify_tickets_sync(tickets, retriever)
     logger.info("Classified %d tickets", len(results))
+
+    # ------------------------------------------------------------------
+    # Stage 4 — Validate output
+    # ------------------------------------------------------------------
+    logger.info("=== Stage 4: Validate output ===")
+    results, validation_report = validate_results(results)
+    logger.info("Validation report: %s", validation_report.summary())
 
     # Convert to dicts for JSON serialisation
     return [r.to_dict() for r in results]
