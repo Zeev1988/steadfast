@@ -7,6 +7,8 @@ Public API mirrors the former flat ``evaluate`` module so
 
 from __future__ import annotations
 
+from models import PRIORITY_RANK
+
 from .evaluation import evaluate_run
 from .labels import load_eval_labels
 from .metrics import (
@@ -23,7 +25,6 @@ from .metrics import (
     kb_alignment_proxy,
 )
 from .metrics.category import HIGH_RISK_CATEGORIES
-from .metrics.priority import PRIORITY_RANK
 from .metrics.validation_flag import STAGE_4_ISSUE_FLAGS
 
 __all__ = (

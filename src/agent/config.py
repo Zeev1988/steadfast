@@ -34,4 +34,5 @@ def require_model() -> str:
         )
     return MODEL
 
+
 MAX_OUTPUT_TOKENS = int(os.environ.get("LLM_MAX_TOKENS", "4096"))

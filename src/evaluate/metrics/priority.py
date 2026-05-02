@@ -3,16 +3,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from models import Ticket
+from models import PRIORITY_RANK, Ticket
 
 from .base import EvaluationMetric, JoinContext
-
-PRIORITY_RANK: dict[str, int] = {
-    "low": 0,
-    "medium": 1,
-    "high": 2,
-    "critical": 3,
-}
 
 
 class PriorityCostMetric(EvaluationMetric):

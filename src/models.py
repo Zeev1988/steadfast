@@ -31,6 +31,10 @@ class Priority(str, Enum):
 VALID_CATEGORIES: frozenset[str] = frozenset(c.value for c in Category)
 VALID_PRIORITIES: frozenset[str] = frozenset(p.value for p in Priority)
 
+# Ordinal rank for bump-up rules, priority eval cost, and error analysis.
+# Values follow ``Priority`` enum member order; keep that order semantically ascending.
+PRIORITY_RANK: dict[str, int] = {p.value: i for i, p in enumerate(Priority)}
+
 # Keys Stage 5 (postprocess) reads from `TriageResult` / ticket pairs.
 TRIAGE_KEYS_FOR_POSTPROCESS: frozenset[str] = frozenset(
     {"ticket_id", "category", "priority", "response", "confidence", "flags"}

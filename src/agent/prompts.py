@@ -59,7 +59,7 @@ Respond with a single JSON object — no markdown fences, no extra text:
 }}
 
 Rules for ``response``:
-- Keep it to **2–3 concise sentences** (roughly 40–60 words).
+- Keep it to **2-3 concise sentences** (roughly 40-60 words).
 - Acknowledge the issue briefly (one clause), then provide **specific, actionable next steps**.
 - If KB context fits, name the concrete workaround, navigation path, or known resolution; skip generic filler.
 - Professional, warm tone. Do NOT invent features or steps absent from KB context."""
