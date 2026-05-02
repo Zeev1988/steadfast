@@ -125,7 +125,7 @@ def _rule_howto_is_onboarding(
 
 
 # ---------------------------------------------------------------------------
-# Rule 5: Explicit pricing / charge keywords → billing (not account)
+# Rule 4: Explicit pricing / charge keywords → billing (not account)
 # ---------------------------------------------------------------------------
 
 _BILLING_RE = re.compile(
@@ -148,7 +148,7 @@ def _rule_money_is_billing(
 
 
 # ---------------------------------------------------------------------------
-# Rule 6: Data loss / security breach → bump to critical
+# Rule 5: Data loss / security breach → bump to critical
 # ---------------------------------------------------------------------------
 
 _CRITICAL_RE = re.compile(
@@ -169,7 +169,7 @@ def _rule_critical_keywords(
 
 
 # ---------------------------------------------------------------------------
-# Rule 7: Large user impact → bump to at least high
+# Rule 6: Large user impact → bump to at least high
 # ---------------------------------------------------------------------------
 # Phrases like "100-person team", "50 users affected", "entire team" signal
 # broad impact that warrants at least high priority.
@@ -193,7 +193,7 @@ def _rule_high_impact(
 
 
 # ---------------------------------------------------------------------------
-# Rule 8: Enterprise plan + high-severity issue → consider critical
+# Rule 7: Enterprise plan + high-severity issue → consider critical
 # ---------------------------------------------------------------------------
 # Enterprise outages have outsized business impact.
 
@@ -209,7 +209,7 @@ def _rule_enterprise_escalation(
 
 
 # ---------------------------------------------------------------------------
-# Rule 9: Low-confidence results → flag for human review
+# Rule 8: Low-confidence results → flag for human review
 # ---------------------------------------------------------------------------
 
 CONFIDENCE_REVIEW_THRESHOLD = 0.6
@@ -233,7 +233,7 @@ def _rule_low_confidence_flag(
 
 
 # ---------------------------------------------------------------------------
-# Rule 10: Multi-issue tickets → flag for human review
+# Rule 9: Multi-issue tickets → flag for human review
 # ---------------------------------------------------------------------------
 # Tickets that mention multiple distinct problems should be reviewed by a human
 # who can split them or pick the primary issue.
@@ -263,17 +263,17 @@ def _rule_multi_issue_flag(
 
 _RULES = [
     # Category corrections (specific → general)
-    _rule_api_rate_limit_is_integration,  # Rule 1
-    _rule_sso_is_integration,  # Rule 2
-    _rule_howto_is_onboarding,  # Rule 3
-    _rule_money_is_billing,  # Rule 4
+    _rule_api_rate_limit_is_integration,   # Rule 1
+    _rule_sso_is_integration,              # Rule 2
+    _rule_howto_is_onboarding,             # Rule 3
+    _rule_money_is_billing,                # Rule 4
     # Priority bumps (never down, only up)
-    _rule_critical_keywords,  # Rule 5
-    _rule_high_impact,  # Rule 6
-    _rule_enterprise_escalation,  # Rule 7
+    _rule_critical_keywords,               # Rule 5
+    _rule_high_impact,                     # Rule 6
+    _rule_enterprise_escalation,           # Rule 7
     # Flags
-    _rule_low_confidence_flag,  # Rule 8
-    _rule_multi_issue_flag,  # Rule 9
+    _rule_low_confidence_flag,             # Rule 8
+    _rule_multi_issue_flag,                # Rule 9
 ]
 
 

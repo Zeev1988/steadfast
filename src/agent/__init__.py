@@ -11,9 +11,9 @@ Design decisions
   ``claude-sonnet-4-20250514``), e.g. ``gpt-4o``, ``mistral/mistral-large-latest``.
   LiteLLM reads the matching API key env var automatically
   (ANTHROPIC_API_KEY, OPENAI_API_KEY, etc.).
-- Context: BM25 top-5 KB chunks injected into the system message so the model
-  can ground its classification and response in Steadfast-specific terminology,
-  known issues, and historical resolutions.
+- Context: BM25 top-k KB chunks (default k=3) injected into the system message
+  so the model can ground its classification and response in Steadfast-specific
+  terminology, known issues, and historical resolutions.
 - Output: JSON requested via explicit schema in the prompt.  A lightweight
   regex/json parser extracts the first JSON object from the response.
 - Concurrency: asyncio.gather with a semaphore (default 5) keeps throughput
@@ -30,6 +30,6 @@ Design decisions
 from __future__ import annotations
 
 from .classify import classify_tickets, classify_tickets_sync
-from .config import MODEL
+from .config import MODEL, require_model
 
-__all__ = ["MODEL", "classify_tickets", "classify_tickets_sync"]
+__all__ = ["MODEL", "classify_tickets", "classify_tickets_sync", "require_model"]

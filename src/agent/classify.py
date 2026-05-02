@@ -20,7 +20,7 @@ from tenacity import (
 
 from models import Ticket, TriageResult
 
-from .config import MODEL
+from .config import require_model
 from .llm import call_and_parse
 from .prompts import build_system_prompt, build_user_message
 
@@ -141,7 +141,8 @@ async def classify_tickets(
     Returns:
         List of TriageResult in the same order as input tickets.
     """
-    logger.info("Using model: %s (concurrency=%d)", MODEL, concurrency)
+    model = require_model()
+    logger.info("Using model: %s (concurrency=%d)", model, concurrency)
 
     semaphore = asyncio.Semaphore(concurrency)
     tasks = [_classify_one(ticket, retriever, semaphore) for ticket in tickets]

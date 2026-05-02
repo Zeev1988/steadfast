@@ -2,7 +2,6 @@
 pydantic>=2.0,<3
 pandas>=2.2,<3
 rank-bm25>=0.2,<1
-pytest>=8.0,<10
 litellm>=1.40,<2
 python-dotenv>=1.0,<2
 tenacity>=8.2,<10

@@ -6,7 +6,7 @@ from litellm import acompletion
 
 from models import TriageResult
 
-from .config import MAX_OUTPUT_TOKENS, MODEL
+from .config import MAX_OUTPUT_TOKENS, require_model
 from .parse_response import parse_response
 
 
@@ -20,7 +20,7 @@ async def call_and_parse(
     Raises ValueError on truncated or unparseable output so Tenacity can retry.
     """
     resp = await acompletion(
-        model=MODEL,
+        model=require_model(),
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},

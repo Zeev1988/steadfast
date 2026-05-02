@@ -58,11 +58,11 @@ Respond with a single JSON object — no markdown fences, no extra text:
   "confidence": <float 0-1>
 }}
 
-Rules for ``response`` (brevity and focus):
-- **Maximum 20 words** for ``response``.
-- Do **not** repeat or restate the customer's problem verbatim; briefly acknowledge once if needed (one clause), then actionable next steps.
-- If KB context fits, name the concrete workaround or navigation path; skip filler.
-- Professional, warm tone. Do NOT invent features absent from KB context."""
+Rules for ``response``:
+- Keep it to **2–3 concise sentences** (roughly 40–60 words).
+- Acknowledge the issue briefly (one clause), then provide **specific, actionable next steps**.
+- If KB context fits, name the concrete workaround, navigation path, or known resolution; skip generic filler.
+- Professional, warm tone. Do NOT invent features or steps absent from KB context."""
 
 
 def build_system_prompt(kb_chunks: list[str]) -> str:
