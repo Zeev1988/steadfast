@@ -1,0 +1,448 @@
+{
+  "n_results": 46,
+  "n_joined": 46,
+  "missing_label_ticket_ids": [],
+  "orphaned_label_ticket_ids": [],
+  "per_ticket": [
+    {
+      "ticket_id": "EVAL-001",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0851
+    },
+    {
+      "ticket_id": "EVAL-002",
+      "category_mismatch": {
+        "expected": "onboarding",
+        "predicted": "account"
+      },
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1574
+    },
+    {
+      "ticket_id": "EVAL-003",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 1,
+      "kb_alignment_proxy": 0.0729
+    },
+    {
+      "ticket_id": "EVAL-004",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1875
+    },
+    {
+      "ticket_id": "EVAL-005",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1944
+    },
+    {
+      "ticket_id": "EVAL-006",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1039
+    },
+    {
+      "ticket_id": "EVAL-007",
+      "priority_penalty_kind": "under_prediction",
+      "priority_mismatch": {
+        "expected": "medium",
+        "predicted": "low"
+      },
+      "priority_cost_score": 0.6667,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1176
+    },
+    {
+      "ticket_id": "EVAL-008",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1282
+    },
+    {
+      "ticket_id": "EVAL-009",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1875
+    },
+    {
+      "ticket_id": "EVAL-010",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0641
+    },
+    {
+      "ticket_id": "EVAL-011",
+      "category_mismatch": {
+        "expected": "bug",
+        "predicted": "onboarding"
+      },
+      "priority_penalty_kind": "under_prediction",
+      "priority_mismatch": {
+        "expected": "medium",
+        "predicted": "low"
+      },
+      "priority_cost_score": 0.6667,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1404
+    },
+    {
+      "ticket_id": "EVAL-012",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0776
+    },
+    {
+      "ticket_id": "EVAL-013",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0857
+    },
+    {
+      "ticket_id": "EVAL-014",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0971
+    },
+    {
+      "ticket_id": "EVAL-015",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1111
+    },
+    {
+      "ticket_id": "EVAL-016",
+      "category_mismatch": {
+        "expected": "account",
+        "predicted": "billing"
+      },
+      "priority_penalty_kind": "over_prediction",
+      "priority_mismatch": {
+        "expected": "low",
+        "predicted": "medium"
+      },
+      "priority_cost_score": 0.8889,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1231
+    },
+    {
+      "ticket_id": "EVAL-017",
+      "category_mismatch": {
+        "expected": "feature_request",
+        "predicted": "onboarding"
+      },
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0759
+    },
+    {
+      "ticket_id": "EVAL-018",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0769
+    },
+    {
+      "ticket_id": "EVAL-019",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.125
+    },
+    {
+      "ticket_id": "EVAL-020",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.16
+    },
+    {
+      "ticket_id": "EVAL-021",
+      "priority_penalty_kind": "under_prediction",
+      "priority_mismatch": {
+        "expected": "critical",
+        "predicted": "high"
+      },
+      "priority_cost_score": 0.6667,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0989
+    },
+    {
+      "ticket_id": "EVAL-022",
+      "priority_penalty_kind": "under_prediction",
+      "priority_mismatch": {
+        "expected": "medium",
+        "predicted": "low"
+      },
+      "priority_cost_score": 0.6667,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1698
+    },
+    {
+      "ticket_id": "EVAL-023",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0571
+    },
+    {
+      "ticket_id": "EVAL-024",
+      "priority_penalty_kind": "under_prediction",
+      "priority_mismatch": {
+        "expected": "high",
+        "predicted": "medium"
+      },
+      "priority_cost_score": 0.6667,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.2703
+    },
+    {
+      "ticket_id": "EVAL-025",
+      "category_mismatch": {
+        "expected": "account",
+        "predicted": "billing"
+      },
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1429
+    },
+    {
+      "ticket_id": "EVAL-026",
+      "priority_penalty_kind": "over_prediction",
+      "priority_mismatch": {
+        "expected": "low",
+        "predicted": "high"
+      },
+      "priority_cost_score": 0.7778,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.2174
+    },
+    {
+      "ticket_id": "EVAL-027",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0984
+    },
+    {
+      "ticket_id": "EVAL-028",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1228
+    },
+    {
+      "ticket_id": "EVAL-029",
+      "category_mismatch": {
+        "expected": "performance",
+        "predicted": "integration"
+      },
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1286
+    },
+    {
+      "ticket_id": "EVAL-030",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1765
+    },
+    {
+      "ticket_id": "EVAL-031",
+      "priority_penalty_kind": "over_prediction",
+      "priority_mismatch": {
+        "expected": "low",
+        "predicted": "medium"
+      },
+      "priority_cost_score": 0.8889,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1731
+    },
+    {
+      "ticket_id": "EVAL-032",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.25
+    },
+    {
+      "ticket_id": "EVAL-033",
+      "category_mismatch": {
+        "expected": "bug",
+        "predicted": "integration"
+      },
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1667
+    },
+    {
+      "ticket_id": "EVAL-034",
+      "priority_penalty_kind": "over_prediction",
+      "priority_mismatch": {
+        "expected": "low",
+        "predicted": "medium"
+      },
+      "priority_cost_score": 0.8889,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1515
+    },
+    {
+      "ticket_id": "EVAL-035",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 1,
+      "kb_alignment_proxy": 0.0562
+    },
+    {
+      "ticket_id": "EVAL-036",
+      "priority_penalty_kind": "under_prediction",
+      "priority_mismatch": {
+        "expected": "critical",
+        "predicted": "high"
+      },
+      "priority_cost_score": 0.6667,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.14
+    },
+    {
+      "ticket_id": "EVAL-037",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.125
+    },
+    {
+      "ticket_id": "EVAL-038",
+      "priority_penalty_kind": "over_prediction",
+      "priority_mismatch": {
+        "expected": "low",
+        "predicted": "medium"
+      },
+      "priority_cost_score": 0.8889,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0947
+    },
+    {
+      "ticket_id": "EVAL-039",
+      "priority_penalty_kind": "under_prediction",
+      "priority_mismatch": {
+        "expected": "high",
+        "predicted": "medium"
+      },
+      "priority_cost_score": 0.6667,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1667
+    },
+    {
+      "ticket_id": "EVAL-040",
+      "priority_penalty_kind": "over_prediction",
+      "priority_mismatch": {
+        "expected": "low",
+        "predicted": "medium"
+      },
+      "priority_cost_score": 0.8889,
+      "actionability_hint": 1,
+      "kb_alignment_proxy": 0.0465
+    },
+    {
+      "ticket_id": "EVAL-041",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 1,
+      "kb_alignment_proxy": 0.0619
+    },
+    {
+      "ticket_id": "EVAL-042",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.094
+    },
+    {
+      "ticket_id": "EVAL-043",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.0625
+    },
+    {
+      "ticket_id": "EVAL-044",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1091
+    },
+    {
+      "ticket_id": "EVAL-045",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 1,
+      "kb_alignment_proxy": 0.087
+    },
+    {
+      "ticket_id": "EVAL-046",
+      "priority_penalty_kind": "exact",
+      "priority_cost_score": 1.0,
+      "actionability_hint": 0,
+      "kb_alignment_proxy": 0.1604
+    }
+  ],
+  "latency_seconds": {
+    "n": 46,
+    "mean": 10.6577,
+    "p95": 20.1966,
+    "max": 20.4075
+  },
+  "category_accuracy": 0.8478,
+  "category_confusion": {
+    "integration|integration": 8,
+    "onboarding|account": 1,
+    "onboarding|onboarding": 4,
+    "performance|performance": 3,
+    "billing|billing": 4,
+    "bug|onboarding": 1,
+    "security|security": 3,
+    "bug|bug": 9,
+    "account|billing": 2,
+    "feature_request|onboarding": 1,
+    "feature_request|feature_request": 4,
+    "account|account": 4,
+    "performance|integration": 1,
+    "bug|integration": 1
+  },
+  "high_risk_category_mismatches": [],
+  "priority_exact_accuracy": 0.7174,
+  "priority_cost_weights": {
+    "under": 3.0,
+    "over": 1.0
+  },
+  "priority_cost_score_mean": 0.9324,
+  "validation_flag_rate": 0.0,
+  "actionability_hint_rate": 0.1087,
+  "avg_response_char_count_joined": 230.04,
+  "grounding": {
+    "mode": "kb_proxy",
+    "overlap_uses_filtered_tokens": true,
+    "mean": 0.1261
+  }
+}

@@ -1,4 +1,4 @@
-"""Tests for Stage 1 — loader.py."""
+"""Tests for Stage 1 — loader package."""
 
 from __future__ import annotations
 

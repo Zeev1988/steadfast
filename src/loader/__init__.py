@@ -3,9 +3,6 @@ Stage 1: Load data.
 
 Reads the knowledge base CSV and the eval/custom ticket JSON,
 returning normalised Ticket and KBEntry objects.
-
-Paths are read as UTF-8. CSV reads use ``utf-8-sig`` so UTF-8 with or without BOM
-(Excel-export style) parses as expected.
 """
 
 from __future__ import annotations
@@ -75,13 +72,13 @@ def load_knowledge_base(path: str | Path) -> list[KBEntry]:
     if missing:
         raise ValueError(f"KB CSV is missing expected columns: {sorted(missing)}")
 
-    # Row index + 2 ≈ spreadsheet line number (header is row 1).
+    # Row index + 2 ~ spreadsheet line number (header is row 1).
     sub = df.loc[:, list(KB_COL_ORDER)]
     for spreadsheet_row_no, (_, row_series) in enumerate(sub.iterrows(), start=2):
         row = {_k: _scalar_to_str(row_series[_k]) for _k in KB_COL_ORDER}
         if not all(row.get(c) for c in ("ticket_id", "subject", "body")):
             logger.warning(
-                "KB row %d skipped — empty required field", spreadsheet_row_no
+                "KB row %d skipped - empty required field", spreadsheet_row_no
             )
             skipped += 1
             continue
@@ -118,7 +115,7 @@ def load_tickets(path: str | Path) -> list[Ticket]:
     for i, obj in enumerate(raw):
         if not isinstance(obj, dict):
             logger.warning(
-                "Ticket #%d skipped — expected object, got %s",
+                "Ticket #%d skipped - expected object, got %s",
                 i,
                 type(obj).__name__,
             )
@@ -126,7 +123,7 @@ def load_tickets(path: str | Path) -> list[Ticket]:
             continue
         missing = _TICKET_REQUIRED_KEYS - set(obj.keys())
         if missing:
-            logger.warning("Ticket #%d skipped — missing keys: %s", i, sorted(missing))
+            logger.warning("Ticket #%d skipped - missing keys: %s", i, sorted(missing))
             skipped += 1
             continue
 

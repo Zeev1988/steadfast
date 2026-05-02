@@ -1,0 +1,439 @@
+[
+  {
+    "ticket_id": "EVAL-001",
+    "category": "integration",
+    "priority": "high",
+    "response": "I'm sorry you're experiencing errors while importing your CRM data. This issue often relates to special character encoding; please ensure your file is saved specifically in **UTF-8 format** before re-uploading. I have also escalated this to our technical team to investigate if specific Hebrew character escaping is required for your import.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.150958999991417
+  },
+  {
+    "ticket_id": "EVAL-002",
+    "category": "onboarding",
+    "priority": "medium",
+    "response": "Welcome to your new interns! To restrict their access, assign them the 'Member' role and create a custom permission group with create/edit rights but no delete permissions. You can then manage visibility for those two specific projects via Team Permissions settings, following the hierarchy detailed in our setup guide KB-1055.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.3479080410907045
+  },
+  {
+    "ticket_id": "EVAL-003",
+    "category": "integration",
+    "priority": "low",
+    "response": "You can find our comprehensive API documentation, including specific rate limiting details and plan-based thresholds, at docs.steadfast.io/api. For a deeper dive into best practices, I also recommend reviewing our 'Getting Started with the API' tutorial (KB-1050). Please let us know if you need further assistance with your integration!",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.228842458920553
+  },
+  {
+    "ticket_id": "EVAL-004",
+    "category": "onboarding",
+    "priority": "high",
+    "response": "To migrate your Trello data, we recommend using our CSV import tool for flexibility or our API for full fidelity to preserve attachments and assignments. Please refer to our migration guide (KB-1015) for mapping instructions, and I have scheduled an offer for a migration assistance session to help manage your 20 boards.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.651098291040398
+  },
+  {
+    "ticket_id": "EVAL-005",
+    "category": "integration",
+    "priority": "high",
+    "response": "I’m sorry to hear your task status webhooks are firing inconsistently. This often occurs when unauthenticated webhooks reach their 30-day expiration; please try resubscribing the webhook to restore the connection. For a permanent fix, we recommend using our authenticated webhook option with an API key in the header, which does not expire.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 4.6994484580354765
+  },
+  {
+    "ticket_id": "EVAL-006",
+    "category": "performance",
+    "priority": "critical",
+    "response": "I’m sorry for the significant delays your team is experiencing with page loads and scrolling. Our engineering team will investigate potential database query bottlenecks and unoptimized custom field filters that often cause these slowdowns. We will look into adding specific indexes and enabling CDN caching for your workspace to restore your previous performance levels.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)"
+    ],
+    "processing_seconds": 6.400631916010752
+  },
+  {
+    "ticket_id": "EVAL-007",
+    "category": "integration",
+    "priority": "medium",
+    "response": "I understand you'd like Slack notifications to attribute actions to specific users rather than the 'Steadfast Bot.' I have escalated this to our integrations team to verify if this is a configuration issue or a current platform limitation. We will provide an update on enabling user-level attribution for your workspace shortly.",
+    "confidence": 0.9,
+    "flags": [],
+    "processing_seconds": 5.80457779194694
+  },
+  {
+    "ticket_id": "EVAL-008",
+    "category": "billing",
+    "priority": "medium",
+    "response": "I’m sorry for the trouble accessing your billing page; I’ve escalated this to our engineering team to investigate the blank page issue. In the meantime, I can manually email your latest invoice to help with your expense report. Please let me know if you’d like me to send that over right away.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.924131749896333
+  },
+  {
+    "ticket_id": "EVAL-009",
+    "category": "integration",
+    "priority": "critical",
+    "response": "I'm sorry for the login disruptions your team is facing. This redirect loop often stems from a session cookie conflict or an outdated SAML certificate; please ensure your IdP certificate is current in Admin > Security > SSO. Our engineering team is also investigating potential cookie domain scope issues to resolve this for all users.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.857600916991942
+  },
+  {
+    "ticket_id": "EVAL-010",
+    "category": "performance",
+    "priority": "critical",
+    "response": "I’m sorry for the lag your team is experiencing during peak hours. We are investigating potential database query bottlenecks or indexing issues that can affect high-volume workspaces. Could you please confirm if this slowness is most severe on pages using custom field filters while our engineers review your workspace's resource allocation?",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)"
+    ],
+    "processing_seconds": 4.974302750080824
+  },
+  {
+    "ticket_id": "EVAL-011",
+    "category": "onboarding",
+    "priority": "medium",
+    "response": "It sounds like your automation triggers may need adjustment to focus specifically on deadlines. You can configure dedicated overdue alerts by navigating to Settings > Notifications > Due Date Reminders and selecting the 'overdue' option. Please review your automation builder logic to ensure status changes aren't accidentally included as triggers.",
+    "confidence": 0.9,
+    "flags": [],
+    "processing_seconds": 7.416448000003584
+  },
+  {
+    "ticket_id": "EVAL-012",
+    "category": "security",
+    "priority": "critical",
+    "response": "I understand your concern regarding data security following this departure. To audit their activity, navigate to Admin > Reports > User Access Report to export a CSV containing their login history and project access. Deactivating the user's account in your settings will also ensure all active sessions are immediately terminated and access is revoked.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)"
+    ],
+    "processing_seconds": 6.565016458975151
+  },
+  {
+    "ticket_id": "EVAL-013",
+    "category": "billing",
+    "priority": "high",
+    "response": "I apologize for the duplicate charge on your February invoice. I am investigating this with our payment processor now and will process a refund for the $1,680 overcharge immediately. You will receive a confirmation email once the refund is initiated, and funds typically return to your account within 5-10 business days.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 3.9404441659571603
+  },
+  {
+    "ticket_id": "EVAL-014",
+    "category": "security",
+    "priority": "critical",
+    "response": "I understand you need to enforce MFA across your workspace to meet your IT security requirements. I have escalated this to our security team to provide the specific admin-level configuration steps for your Enterprise account. They will ensure all users are prompted for MFA setup during their next login.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)"
+    ],
+    "processing_seconds": 7.733608875074424
+  },
+  {
+    "ticket_id": "EVAL-015",
+    "category": "bug",
+    "priority": "high",
+    "response": "I'm sorry to hear your dashboard widgets are failing to load during your daily standups. We recently identified a data aggregation bug in version 3.14.2 and have begun deploying a hotfix (v3.14.3) to resolve these dashboard errors. I have escalated your ticket to ensure your instance is updated immediately and will confirm once the data is restored.",
+    "confidence": 0.9,
+    "flags": [],
+    "processing_seconds": 5.712786499992944
+  },
+  {
+    "ticket_id": "EVAL-016",
+    "category": "billing",
+    "priority": "high",
+    "response": "Thanks for your interest in our enterprise solutions for your team of 500. Our Enterprise tier starts at $38/seat/month and includes a 99.95% SLA, dedicated CSM, and priority support. I have attached our latest pricing sheet and looped in our sales representative, Sarah K., to discuss your implementation timeline and data migration needs in detail.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.674866167013533
+  },
+  {
+    "ticket_id": "EVAL-017",
+    "category": "feature_request",
+    "priority": "low",
+    "response": "I understand you'd like 'Critical' tasks to automatically move to the top of your list. Currently, priority levels do not trigger automatic reordering, though you can manually drag and drop tasks to organize your view. I have shared your feedback with our product team as a request for automated sorting logic.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 16.985573624959216
+  },
+  {
+    "ticket_id": "EVAL-018",
+    "category": "feature_request",
+    "priority": "low",
+    "response": "Thank you for sharing your feedback regarding color-coded task labels to improve board visibility. I have logged this as a feature request for our product team to review for future updates. In the meantime, you can use text-based prefixes on labels to help categorize and scan your tasks more easily.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.617286249995232
+  },
+  {
+    "ticket_id": "EVAL-019",
+    "category": "billing",
+    "priority": "medium",
+    "response": "I apologize for the invoice delivery issue despite your recent update. I am investigating your billing profile to ensure the new address is correctly linked and will resend the last three invoices to finance@quartz-data.com shortly. You should see these in your inbox within the hour.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.62116404203698
+  },
+  {
+    "ticket_id": "EVAL-020",
+    "category": "integration",
+    "priority": "medium",
+    "response": "We support SCIM provisioning with Okta for Enterprise customers to automate user lifecycle management. I will provide our detailed integration guide which covers connecting your Okta instance and configuring attribute mappings for automated access control. This setup will ensure that user creation and revocation are handled automatically based on your HR system.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 10.127055541961454
+  },
+  {
+    "ticket_id": "EVAL-021",
+    "category": "performance",
+    "priority": "critical",
+    "response": "I'm sorry for the 504 errors you're experiencing when loading your Q2 planning project. Our engineering team is investigating this as a database query bottleneck, likely requiring an index update on your custom field filters. We are prioritizing this optimization for your workspace and will notify you immediately once the fix is deployed.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)"
+    ],
+    "processing_seconds": 7.219539584009908
+  },
+  {
+    "ticket_id": "EVAL-022",
+    "category": "feature_request",
+    "priority": "medium",
+    "response": "Thank you for sharing your need for task dependencies; I understand how this would streamline your complex project planning. I have logged this as a feature request for our product team to review. While we don't have a native dependency tool yet, we will notify you of any updates regarding its development.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.859969625016674
+  },
+  {
+    "ticket_id": "EVAL-023",
+    "category": "bug",
+    "priority": "high",
+    "response": "I'm sorry for the frustration with your custom dropdown fields not saving. I have escalated this to our engineering team to investigate a potential regression in the field configuration engine. Could you please provide the specific field name and project URL so we can examine the save logs for your account?",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 6.127961792051792
+  },
+  {
+    "ticket_id": "EVAL-024",
+    "category": "account",
+    "priority": "high",
+    "response": "To transfer workspace ownership, we require a written request from a company officer via our standard form and verification that Sarah's email domain matches your account. I have attached the necessary form for you to complete. Once processed, we will transition the role and deactivate your account while regenerating API keys to ensure a secure handoff.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.247757666977122
+  },
+  {
+    "ticket_id": "EVAL-025",
+    "category": "billing",
+    "priority": "high",
+    "response": "I understand you're looking to optimize your seat count and billing. You can deactivate inactive users under Settings > Team to prevent future charges for those seats; once updated, please let us know so we can review your account for a prorated credit. Our billing is based on total seats, but we're happy to help adjust this for you.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:medium->high(large_user_impact)"
+    ],
+    "processing_seconds": 5.647687208023854
+  },
+  {
+    "ticket_id": "EVAL-026",
+    "category": "account",
+    "priority": "critical",
+    "response": "I can certainly clarify our data retention policy to help with your evaluation. We strongly recommend exporting your data before cancellation as a safety measure to preserve your projects and custom fields. While archived data remains accessible in a read-only state for a period, exporting ensures you retain all information should you choose to reactivate later.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:medium->critical(data_loss_or_breach)"
+    ],
+    "processing_seconds": 6.878366916091181
+  },
+  {
+    "ticket_id": "EVAL-027",
+    "category": "bug",
+    "priority": "high",
+    "response": "I am sorry to hear your task attachments are disappearing, as we understand how critical these deliverables are. Please provide specific task IDs where this occurred so our engineering team can investigate the storage logs immediately. In the meantime, please confirm if these files exceed 10MB, as we are currently addressing known upload proxy limitations.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 4.951611750060692
+  },
+  {
+    "ticket_id": "EVAL-028",
+    "category": "security",
+    "priority": "high",
+    "response": "I'm sorry to hear about this unauthorized access; I have escalated this to our security team to investigate the access logs for your account. Please navigate to your Security Settings and select 'Log out of all other sessions' to ensure the unrecognized session is immediately terminated. We also strongly recommend enabling 2FA or SSO to provide an additional layer of protection.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 11.185913000022992
+  },
+  {
+    "ticket_id": "EVAL-029",
+    "category": "integration",
+    "priority": "high",
+    "response": "I’m sorry for the 429 errors affecting your analytics dashboard. While the Growth plan limit is 100 req/min, we are investigating if a recent backend migration impacted the /v2/analytics endpoint specifically. I have escalated this to our engineering team to verify and restore your standard rate limits immediately.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.592980792047456
+  },
+  {
+    "ticket_id": "EVAL-030",
+    "category": "bug",
+    "priority": "high",
+    "response": "I’m sorry for the frustration caused by these intermittent search results. Our engineering team is investigating potential indexing delays within our search service and will likely perform a reindex job to ensure all items are consistently retrievable. We will notify you as soon as the search functionality is fully stabilized.",
+    "confidence": 0.9,
+    "flags": [],
+    "processing_seconds": 5.360513082938269
+  },
+  {
+    "ticket_id": "EVAL-031",
+    "category": "onboarding",
+    "priority": "high",
+    "response": "Welcome to Steadfast! To get your marketing team started, I recommend following our Admin Onboarding Checklist (KB-1001), starting with workspace configuration and project templates for your campaigns. We also suggest running a one-week pilot with a small group before a full rollout, and I’m happy to schedule a free onboarding call with our team to walk you through it.",
+    "confidence": 1.0,
+    "flags": [
+      "priority_bumped:medium->high(large_user_impact)"
+    ],
+    "processing_seconds": 4.265471291961148
+  },
+  {
+    "ticket_id": "EVAL-032",
+    "category": "billing",
+    "priority": "medium",
+    "response": "I understand you're inquiring about seat charges for external contractors on your Growth plan. To manage their access effectively, you can use the 'Bulk Invite via CSV' tool in Settings > Team and assign them to a restricted permission group. For specific details on how these seats affect your invoice, please refer to the Billing section in your workspace settings.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 10.13374441594351
+  },
+  {
+    "ticket_id": "EVAL-033",
+    "category": "integration",
+    "priority": "high",
+    "response": "I'm sorry to hear your Slack notifications aren't triggering for subtasks. This often happens if the automation's webhook subscription has expired; I've asked our team to resubscribe it and check if an authenticated webhook is required for subtask transitions. I will update you as soon as we have confirmed the fix.",
+    "confidence": 0.9,
+    "flags": [],
+    "processing_seconds": 8.075881667085923
+  },
+  {
+    "ticket_id": "EVAL-034",
+    "category": "feature_request",
+    "priority": "medium",
+    "response": "I have logged your request for a native calendar view with our product team. While not currently available, we are developing a Gantt chart view (FR-2923) for a Q2 beta release, which is currently our second most requested feature. I will notify you as soon as we have updates regarding calendar functionality.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 20.80840633297339
+  },
+  {
+    "ticket_id": "EVAL-035",
+    "category": "integration",
+    "priority": "medium",
+    "response": "Welcome to Steadfast! For server-to-server authentication, please refer to our Authentication guide at docs.steadfast.io/api, which details the specific headers and tokens required for your Snowflake connection. I also recommend joining our developer Slack community for real-time support from our engineering team as you build out your BI dashboards.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 4.278691167011857
+  },
+  {
+    "ticket_id": "EVAL-036",
+    "category": "integration",
+    "priority": "critical",
+    "response": "I'm sorry for the disruption to your engineering workflow. Please verify the Steadfast Jira plugin status in the Atlassian Marketplace and re-confirm your project and field mappings to ensure bidirectional sync is still enabled. I have also escalated the admin access and timeline sorting issues to our engineering team for immediate review.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)",
+      "ambiguous_category"
+    ],
+    "processing_seconds": 6.349315083003603
+  },
+  {
+    "ticket_id": "EVAL-037",
+    "category": "account",
+    "priority": "medium",
+    "response": "You can manage these accounts by navigating to Settings > Team, where deactivating a user revokes access while safely preserving all their project data. Use the bulk selection tool in the Team dashboard to deactivate multiple users at once and reassign their active tasks to other team members.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 4.31406533299014
+  },
+  {
+    "ticket_id": "EVAL-038",
+    "category": "account",
+    "priority": "low",
+    "response": "I can certainly help you locate your workspace storage usage. You can view these details by navigating to Admin > Analytics > Account Usage within your dashboard. This section provides a comprehensive breakdown of your current storage, active users, and project counts to help you monitor your Enterprise limits.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.415054042008705
+  },
+  {
+    "ticket_id": "EVAL-039",
+    "category": "integration",
+    "priority": "high",
+    "response": "I’m sorry to hear your GitHub integration is experiencing authentication errors. Please navigate to your Integration Dashboard and attempt to re-authenticate the GitHub connector to refresh the connection token. If this doesn't resolve the sync, please let us know so we can investigate potential changes to the OAuth flow.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 5.249589791055769
+  },
+  {
+    "ticket_id": "EVAL-040",
+    "category": "bug",
+    "priority": "high",
+    "response": "I’m sorry to hear the exported charts are appearing pixelated in your PDF reports. I have escalated this to our engineering team to investigate the PDF rendering service's resolution settings. In the meantime, please try using the 'Executive Summary' template under the Reports tab, which uses a specialized rendering path for high-quality client-facing documents.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 4.713135084020905
+  },
+  {
+    "ticket_id": "EVAL-041",
+    "category": "bug",
+    "priority": "critical",
+    "response": "I’m sorry to hear your Workspace Blueprints aren't provisioning correctly. This is a known issue where channel creation fails if the provisioning user lacks specific admin permissions; please ensure your instance is updated to version 3.15.0. If you're still seeing failures, please confirm your current permission level so we can verify the fix for your workspace.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)"
+    ],
+    "processing_seconds": 4.865688666002825
+  },
+  {
+    "ticket_id": "EVAL-042",
+    "category": "bug",
+    "priority": "high",
+    "response": "I apologize for the stale data in your Pulse Check report. I have manually invalidated your report's cache to force an immediate refresh with this week's metrics. We are currently investigating a configuration issue regarding cache TTL settings to ensure this does not recur for your future reports.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 3.8078679580939934
+  },
+  {
+    "ticket_id": "EVAL-043",
+    "category": "bug",
+    "priority": "high",
+    "response": "I apologize for the misrouted tasks; this appears to be a known issue where recent model retraining incorporated incorrect historical patterns. I have escalated this to our engineering team to roll back your routing model and implement a confidence threshold to ensure accuracy. We will notify you immediately once these adjustments are live.",
+    "confidence": 0.95,
+    "flags": [],
+    "processing_seconds": 4.130249582929537
+  },
+  {
+    "ticket_id": "EVAL-044",
+    "category": "bug",
+    "priority": "critical",
+    "response": "I'm sorry to hear your role changes aren't propagating. To fix this, please disable Cascade, re-enable it, and ensure you click 'Apply to existing sub-spaces' in the confirmation dialog to force a retroactive sync. Note that these changes typically take up to five minutes to propagate fully.",
+    "confidence": 0.95,
+    "flags": [
+      "priority_bumped:high->critical(enterprise_high_severity)"
+    ],
+    "processing_seconds": 3.668165000039153
+  },
+  {
+    "ticket_id": "EVAL-045",
+    "category": "onboarding",
+    "priority": "low",
+    "response": "Smart Routing is an advanced feature available exclusively on our Growth and Enterprise plans. As a workaround on the Starter plan, you can use workflow automation rules to auto-assign tasks based on specific tags or labels. Please refer to our automation guide (KB-1030) for setup steps or let us know if you'd like to discuss an upgrade.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.586927917087451
+  },
+  {
+    "ticket_id": "EVAL-046",
+    "category": "feature_request",
+    "priority": "low",
+    "response": "While Pulse Check currently supports only default metrics, custom KPIs are on our product roadmap. In the meantime, you can use our Custom Report Builder to track these specific metrics and schedule them to run alongside your Pulse Check. I have also added your team to our customization beta list.",
+    "confidence": 1.0,
+    "flags": [],
+    "processing_seconds": 4.03271808300633
+  }
+]
