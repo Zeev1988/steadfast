@@ -1,20 +1,25 @@
 """
 Stage 4: Validate LLM output.
 
-Every TriageResult coming out of Stage 3 is checked for:
-  1. Category is a valid enum value.
-  2. Priority is a valid enum value.
-  3. Response is non-empty and meets a minimum length threshold.
-  4. Confidence (if present) is in [0, 1].
-  5. ticket_id is non-empty.
+LLM-side JSON schema (required keys ``category``, ``priority``, ``response``
+and optional ``reasoning`` / ``confidence``) is enforced in Stage 3 via
+:class:`models.LlmTriagePayload` before results become :class:`models.TriageResult`.
 
-Invalid fields are corrected in place with safe defaults and a flag is appended
-so downstream stages (heuristics, evaluation, error analysis) can see what was
-fixed.  Results that already carry an "llm_failure" flag are passed through
-unchanged — they were already marked as fallback in Stage 3.
+This stage validates *domain* rules and downstream contracts:
 
-After validating the full batch, a ValidationReport is returned with counts of
-each issue type so the pipeline can log failure rates.
+  1. Category is a ``VALID_CATEGORIES`` value (postprocessor assumes real labels).
+  2. Priority is a ``VALID_PRIORITIES`` value.
+  3. Response is non-empty and meets minimum length (`MIN_RESPONSE_LENGTH`).
+  4. Confidence (if present) is clamped into [0, 1].
+  5. ``ticket_id`` is non-empty (Stage 5 expects the fields in
+     ``models.TRIAGE_KEYS_FOR_POSTPROCESS``).
+
+Invalid fields are corrected in place with safe defaults and a flag is appended;
+downstream tooling should prefer ``logging`` levels (caller configures handlers).
+
+Results that carry ``llm_failure`` pass through untouched (fallback from Stage 3).
+
+After validating the full batch, a :class:`ValidationReport` summarizes issue counts.
 """
 
 from __future__ import annotations

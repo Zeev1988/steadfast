@@ -3,22 +3,29 @@ Stage 1: Load data.
 
 Reads the knowledge base CSV and the eval/custom ticket JSON,
 returning normalised Ticket and KBEntry objects.
+
+Paths are read as UTF-8. CSV reads use ``utf-8-sig`` so UTF-8 with or without BOM
+(Excel-export style) parses as expected.
 """
 
 from __future__ import annotations
 
-import csv
 import json
 import logging
 from collections import Counter
 from pathlib import Path
 
+import pandas as pd
+
 from models import KBEntry, Ticket
 
 logger = logging.getLogger(__name__)
 
-# Column names expected in knowledge_base.csv
-_KB_REQUIRED_COLS = {
+# Keys expected in each ticket JSON object (eval set or custom input)
+_TICKET_REQUIRED_KEYS = {"ticket_id", "subject", "body"}
+
+# Knowledge base CSV columns (order matches ``tests.test_loader`` fixtures).
+KB_COL_ORDER: tuple[str, ...] = (
     "ticket_id",
     "customer_name",
     "plan",
@@ -27,10 +34,20 @@ _KB_REQUIRED_COLS = {
     "category",
     "priority",
     "resolution",
-}
+)
+_KB_REQUIRED_COLS: frozenset[str] = frozenset(KB_COL_ORDER)
 
-# Keys expected in each ticket JSON object (eval set or custom input)
-_TICKET_REQUIRED_KEYS = {"ticket_id", "subject", "body"}
+
+def _scalar_to_str(cell: object) -> str:
+    """Normalise a parsed CSV cell to a trimmed string."""
+    if cell is None:
+        return ""
+    try:
+        if pd.isna(cell):
+            return ""
+    except TypeError:
+        pass
+    return str(cell).strip()
 
 
 def load_knowledge_base(path: str | Path) -> list[KBEntry]:
@@ -45,22 +62,31 @@ def load_knowledge_base(path: str | Path) -> list[KBEntry]:
     entries: list[KBEntry] = []
     skipped = 0
 
-    with path.open(newline="", encoding="utf-8") as fh:
-        reader = csv.DictReader(fh)
+    df = pd.read_csv(
+        path,
+        encoding="utf-8-sig",
+        dtype=str,
+        keep_default_na=False,
+        na_filter=False,
+    )
+    df.columns = [str(c).strip() for c in df.columns]
 
-        missing = _KB_REQUIRED_COLS - set(reader.fieldnames or [])
-        if missing:
-            raise ValueError(
-                f"KB CSV is missing expected columns: {sorted(missing)}"
-            )
+    missing = _KB_REQUIRED_COLS - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"KB CSV is missing expected columns: {sorted(missing)}"
+        )
 
-        for i, row in enumerate(reader, start=2):  # row 1 is header
-            if not all(row.get(c, "").strip() for c in ("ticket_id", "subject", "body")):
-                logger.warning("KB row %d skipped — empty required field", i)
-                skipped += 1
-                continue
+    # Row index + 2 ≈ spreadsheet line number (header is row 1).
+    sub = df.loc[:, list(KB_COL_ORDER)]
+    for spreadsheet_row_no, (_, row_series) in enumerate(sub.iterrows(), start=2):
+        row = {_k: _scalar_to_str(row_series[_k]) for _k in KB_COL_ORDER}
+        if not all(row.get(c) for c in ("ticket_id", "subject", "body")):
+            logger.warning("KB row %d skipped — empty required field", spreadsheet_row_no)
+            skipped += 1
+            continue
 
-            entries.append(KBEntry(**{k: row.get(k, "") for k in _KB_REQUIRED_COLS}))
+        entries.append(KBEntry(**{k: row[k] for k in KB_COL_ORDER}))
 
     logger.info("Loaded %d KB entries (%d skipped) from %s", len(entries), skipped, path)
     return entries
@@ -76,8 +102,10 @@ def load_tickets(path: str | Path) -> list[Ticket]:
     if not path.exists():
         raise FileNotFoundError(f"Ticket file not found: {path}")
 
-    with path.open(encoding="utf-8") as fh:
-        raw = json.load(fh)
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON in {path}: {e}") from e
 
     if not isinstance(raw, list):
         raise ValueError(f"Expected a JSON array in {path}, got {type(raw).__name__}")
@@ -86,6 +114,14 @@ def load_tickets(path: str | Path) -> list[Ticket]:
     skipped = 0
 
     for i, obj in enumerate(raw):
+        if not isinstance(obj, dict):
+            logger.warning(
+                "Ticket #%d skipped — expected object, got %s",
+                i,
+                type(obj).__name__,
+            )
+            skipped += 1
+            continue
         missing = _TICKET_REQUIRED_KEYS - set(obj.keys())
         if missing:
             logger.warning(

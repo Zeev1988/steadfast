@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 # Priority ordering (for bump-up logic)
 # ---------------------------------------------------------------------------
 _PRIORITY_RANK = {"low": 0, "medium": 1, "high": 2, "critical": 3}
-_RANK_TO_PRIORITY = {v: k for k, v in _PRIORITY_RANK.items()}
 
 
 def _bump_priority(result: TriageResult, target: str, reason: str) -> bool:

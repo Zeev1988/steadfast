@@ -7,9 +7,9 @@ Decisions:
   keyword overlap with incoming tickets is the dominant retrieval signal.
 - Document string for indexing: subject + body + resolution — all three carry signal.
 - Chunk string for the LLM prompt: structured block with category, priority,
-  subject, and resolution. The resolution field is the most grounding-relevant
-  part per the README ("referencing specific workarounds, configuration steps").
-- k = 5 default: balances context richness against prompt token budget.
+  subject, and resolution; 
+  BM25 indexing still uses the full subject + body + resolution.
+- k = 3 default: matches prompt budget; callers can override.
 """
 
 from __future__ import annotations
@@ -23,6 +23,9 @@ from rank_bm25 import BM25Okapi
 from models import KBEntry, Ticket
 
 logger = logging.getLogger(__name__)
+
+BM25_TOP_K_DEFAULT = 3
+"""How many KB chunks each ticket receives by default."""
 
 _WHITESPACE = re.compile(r"\s+")
 
@@ -72,7 +75,7 @@ def preprocess_kb(entries: list[KBEntry]) -> list[KBEntry]:
 
 def build_retriever(
     processed_kb: list[KBEntry],
-    k: int = 5,
+    k: int = BM25_TOP_K_DEFAULT,
 ) -> Callable[[Ticket], list[str]]:
     """Build a BM25 index over the KB and return a retriever callable.
 

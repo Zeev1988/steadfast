@@ -104,7 +104,10 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
     logger.info("=== Stage 2: Preprocess ===")
     processed_kb = preprocess_kb(kb_entries)
     retriever = build_retriever(processed_kb)
-    logger.info("BM25 index built over %d KB entries (k=5)", len(processed_kb))
+    logger.info(
+        "BM25 index built over %d KB entries",
+        len(processed_kb)
+    )
     if tickets:
         sample_chunks = retriever(tickets[0])
         preview = (sample_chunks[0][:160] + "…") if sample_chunks else "(no chunks)"

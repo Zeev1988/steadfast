@@ -93,6 +93,7 @@ def test_make_chunk_contains_resolution() -> None:
     assert "Added retry logic" in _make_chunk(entry)
 
 
+
 # ---------------------------------------------------------------------------
 # preprocess_kb
 # ---------------------------------------------------------------------------
@@ -207,11 +208,11 @@ def test_retriever_with_real_kb(sample_kb_path: "Path") -> None:  # type: ignore
 
     kb = load_knowledge_base(sample_kb_path)
     processed = preprocess_kb(kb)
-    retriever = build_retriever(processed, k=5)
+    retriever = build_retriever(processed, k=3)
     ticket = _make_ticket(
         subject="Salesforce sync stopped working",
         body="Our Salesforce integration has not synced since last Tuesday",
     )
     chunks = retriever(ticket)
-    assert 1 <= len(chunks) <= 5
+    assert 1 <= len(chunks) <= 3
     assert all(isinstance(c, str) and len(c) > 0 for c in chunks)

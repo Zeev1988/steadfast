@@ -7,7 +7,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class Category(str, Enum):
@@ -30,6 +30,52 @@ class Priority(str, Enum):
 
 VALID_CATEGORIES: frozenset[str] = frozenset(c.value for c in Category)
 VALID_PRIORITIES: frozenset[str] = frozenset(p.value for p in Priority)
+
+# Keys Stage 5 (postprocess) reads from `TriageResult` / ticket pairs.
+TRIAGE_KEYS_FOR_POSTPROCESS: frozenset[str] = frozenset(
+    {"ticket_id", "category", "priority", "response", "confidence", "flags"}
+)
+
+
+class LlmTriagePayload(BaseModel):
+    """Structured shape of LLM JSON after ``json.loads`` (before ``TriageResult``).
+
+    Extra keys are ignored.  ``reasoning`` is optional and stripped downstream.
+    Used in ``agent._parse_response`` for schema enforcement; invalid payloads
+    become retryable ``ValueError``s.
+    """
+
+    model_config = ConfigDict(extra="ignore")
+
+    reasoning: str | None = None
+    category: str = "unknown"
+    priority: str = "medium"
+    response: str = ""
+    confidence: float | None = None
+
+    @field_validator("category", "priority", "response", mode="before")
+    @classmethod
+    def _strip_text(cls, v: object) -> str:
+        if v is None:
+            return ""
+        return str(v).strip()
+
+    @field_validator("confidence", mode="before")
+    @classmethod
+    def _coerce_confidence(cls, v: object) -> float | None:
+        if v is None:
+            return None
+        try:
+            x = float(v)
+        except (TypeError, ValueError):
+            return None
+        return max(0.0, min(1.0, x))
+
+    @model_validator(mode="after")
+    def _response_nonempty(self) -> LlmTriagePayload:
+        if not self.response:
+            raise ValueError("empty or missing response in LLM JSON")
+        return self
 
 
 class Ticket(BaseModel):

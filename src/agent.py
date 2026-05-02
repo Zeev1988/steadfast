@@ -1,6 +1,9 @@
 """
 Stage 3: LLM-based ticket classification.
 
+Prompt copy lives in ``triage_prompts.py``; this file wires LiteLLM, retries,
+and parsing only.
+
 Design decisions
 ----------------
 - Provider abstraction: LiteLLM — a single ``acompletion()`` call works with
@@ -37,6 +40,7 @@ from pathlib import Path
 import litellm
 from dotenv import load_dotenv
 from litellm import acompletion
+from pydantic import ValidationError
 from tenacity import (
     RetryError,
     before_sleep_log,
@@ -46,7 +50,12 @@ from tenacity import (
     wait_exponential_jitter,
 )
 
-from models import Ticket, TriageResult
+from models import LlmTriagePayload, Ticket, TriageResult
+from triage_prompts import (
+    CATEGORY_DESCRIPTIONS,
+    PRIORITY_DESCRIPTIONS,
+    SYSTEM_PROMPT,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -66,64 +75,9 @@ if not MODEL:
     raise ValueError("LLM_MODEL environment variable is not set")
 
 MAX_OUTPUT_TOKENS = int(os.environ.get("LLM_MAX_TOKENS", "1024"))
-# ---------------------------------------------------------------------------
-# Category descriptions — help the model distinguish edge cases
-# ---------------------------------------------------------------------------
-CATEGORY_DESCRIPTIONS = """\
-- billing: Invoices, charges, payment methods, plan pricing, refunds, billing page access issues.
-- bug: Something that previously worked is now broken — errors, crashes, incorrect behaviour, UI glitches.
-- feature_request: Customer wants new functionality or an enhancement that doesn't exist yet.
-- account: User management, ownership transfers, permissions, deactivations, password/access issues (non-SSO).
-- integration: Third-party connectors (Salesforce, HubSpot, Slack, SSO/SAML, webhooks, API, imports/exports involving external systems).
-- onboarding: Getting started, setup guidance, migration from other tools, best-practices questions, documentation lookups.
-- security: Data privacy, encryption, compliance, vulnerability reports, audit requirements, 2FA/MFA issues.
-- performance: Slowness, high latency, timeouts, resource usage, scaling concerns."""
-
-PRIORITY_DESCRIPTIONS = """\
-- low: Informational, nice-to-have, no immediate impact on workflow.
-- medium: Causes inconvenience but has a workaround; not blocking core work.
-- high: Significantly impacts productivity; no easy workaround; needs attention soon.
-- critical: System down, data loss risk, security breach, or large number of users completely blocked."""
 
 # ---------------------------------------------------------------------------
-# System prompt
-# ---------------------------------------------------------------------------
-SYSTEM_PROMPT = """\
-You are a senior support triage agent for **Steadfast**, a B2B SaaS project-management platform.
-
-Your job: given a customer support ticket, classify it and draft an initial customer response.
-
-## Categories (pick exactly one)
-{categories}
-
-## Priorities (pick exactly one)
-{priorities}
-
-## Knowledge Base Context
-The following are resolved tickets from Steadfast's history. Use them to ground your classification and — critically — your customer response. Reference specific Steadfast features, workarounds, configuration steps, or known issues when relevant. Do NOT give generic advice.
-
-{kb_context}
-
-## Output format
-Respond with a single JSON object — no markdown fences, no extra text:
-
-{{
-  "reasoning": "<1 sentence: why this category and priority>",
-  "category": "<one of the 8 categories>",
-  "priority": "<low|medium|high|critical>",
-  "response": "<customer-facing reply — empathetic, specific, actionable, references Steadfast features/KB context>",
-  "confidence": <float 0-1>
-}}
-
-Rules for the response field:
-- Address the customer's specific issue, not a generic problem.
-- If the KB context contains a relevant resolution or workaround, reference it concretely.
-- Include actionable next steps (e.g., "navigate to Settings > Import > …").
-- Keep it 2-5 sentences. Professional but warm.
-- Do NOT fabricate features or steps that aren't in the KB context."""
-
-# ---------------------------------------------------------------------------
-# Prompt assembly
+# Prompt assembly (templates live in triage_prompts.py)
 # ---------------------------------------------------------------------------
 
 
@@ -175,31 +129,20 @@ def _parse_response(raw_text: str, ticket_id: str) -> TriageResult:
 
     data = json.loads(match.group())
 
-    # Strip the reasoning field — it's for chain-of-thought only
-    data.pop("reasoning", None)
+    try:
+        payload = LlmTriagePayload.model_validate(data)
+    except ValidationError as exc:
+        raise ValueError(f"LLM JSON schema invalid for {ticket_id}: {exc}") from exc
 
-    # Normalise values
-    category = str(data.get("category", "unknown")).strip().lower()
-    priority = str(data.get("priority", "medium")).strip().lower()
-    response = str(data.get("response", "")).strip()
-    confidence = data.get("confidence")
-
-    if confidence is not None:
-        try:
-            confidence = float(confidence)
-            confidence = max(0.0, min(1.0, confidence))
-        except (TypeError, ValueError):
-            confidence = None
-
-    if not response:
-        raise ValueError(f"Empty response field for {ticket_id}")
+    category = payload.category.strip().lower()
+    priority = payload.priority.strip().lower()
 
     return TriageResult(
         ticket_id=ticket_id,
         category=category,
         priority=priority,
-        response=response,
-        confidence=confidence,
+        response=payload.response,
+        confidence=payload.confidence,
     )
 
 
@@ -266,7 +209,7 @@ async def _call_and_parse(
             f"max_tokens={MAX_OUTPUT_TOKENS}). Retrying."
         )
 
-    raw_text = choice.message.content
+    raw_text = choice.message.content or ""
     return _parse_response(raw_text, ticket_id)
 
 
