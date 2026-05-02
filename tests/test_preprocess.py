@@ -93,7 +93,6 @@ def test_make_chunk_contains_resolution() -> None:
     assert "Added retry logic" in _make_chunk(entry)
 
 
-
 # ---------------------------------------------------------------------------
 # preprocess_kb
 # ---------------------------------------------------------------------------
@@ -197,7 +196,12 @@ def test_retriever_ranks_relevant_entry_above_unrelated() -> None:
         priority="low",
     )
     retriever = build_retriever([relevant, unrelated], k=2)
-    chunks = retriever(_make_ticket(subject="SSO login redirect loop", body="Users cannot log in SSO keeps redirecting"))
+    chunks = retriever(
+        _make_ticket(
+            subject="SSO login redirect loop",
+            body="Users cannot log in SSO keeps redirecting",
+        )
+    )
     assert len(chunks) >= 1
     # The first chunk should be from the relevant entry
     assert "SSO" in chunks[0] or "SAML" in chunks[0] or "security" in chunks[0]

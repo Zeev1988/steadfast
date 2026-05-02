@@ -88,7 +88,11 @@ class Ticket(BaseModel):
     body: str
 
     @field_validator(
-        "ticket_id", "customer_name", "plan", "subject", "body",
+        "ticket_id",
+        "customer_name",
+        "plan",
+        "subject",
+        "body",
         mode="before",
     )
     @classmethod
@@ -136,6 +140,8 @@ class TriageResult(BaseModel):
     response: str
     confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
     flags: list[str] = Field(default_factory=list)
+    # Wall-clock per ticket including retries (Stage 3); optional for tooling.
+    processing_seconds: Optional[float] = Field(default=None, ge=0.0)
 
     def to_dict(self) -> dict:
         out = self.model_dump(exclude_none=True)

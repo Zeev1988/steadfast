@@ -43,7 +43,10 @@ def _bump_priority(result: TriageResult, target: str, reason: str) -> bool:
         result.flags.append(f"priority_bumped:{old}->{target}({reason})")
         logger.debug(
             "%s: priority bumped %s → %s (%s)",
-            result.ticket_id, old, target, reason,
+            result.ticket_id,
+            old,
+            target,
+            reason,
         )
         return True
     return False
@@ -61,7 +64,8 @@ _API_RATE_LIMIT_RE = re.compile(
 
 
 def _rule_api_rate_limit_is_integration(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     text = f"{ticket.subject} {ticket.body}"
     if result.category == "performance" and _API_RATE_LIMIT_RE.search(text):
@@ -84,7 +88,8 @@ _SSO_RE = re.compile(
 
 
 def _rule_sso_is_integration(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     text = f"{ticket.subject} {ticket.body}"
     if result.category in ("security", "account") and _SSO_RE.search(text):
@@ -109,7 +114,8 @@ _ONBOARDING_RE = re.compile(
 
 
 def _rule_howto_is_onboarding(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     text = f"{ticket.subject} {ticket.body}"
     if result.category == "feature_request" and _ONBOARDING_RE.search(text):
@@ -131,7 +137,8 @@ _BILLING_RE = re.compile(
 
 
 def _rule_money_is_billing(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     text = f"{ticket.subject} {ticket.body}"
     if result.category == "account" and _BILLING_RE.search(text):
@@ -153,7 +160,8 @@ _CRITICAL_RE = re.compile(
 
 
 def _rule_critical_keywords(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     text = f"{ticket.subject} {ticket.body}"
     if _CRITICAL_RE.search(text):
@@ -176,7 +184,8 @@ _HIGH_IMPACT_RE = re.compile(
 
 
 def _rule_high_impact(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     text = f"{ticket.subject} {ticket.body}"
     if _HIGH_IMPACT_RE.search(text):
@@ -188,8 +197,10 @@ def _rule_high_impact(
 # ---------------------------------------------------------------------------
 # Enterprise outages have outsized business impact.
 
+
 def _rule_enterprise_escalation(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     if ticket.plan.lower() == "enterprise" and result.priority == "high":
         # Only escalate for categories where outages are plausible
@@ -205,12 +216,20 @@ CONFIDENCE_REVIEW_THRESHOLD = 0.6
 
 
 def _rule_low_confidence_flag(
-    result: TriageResult, _ticket: Ticket,
+    result: TriageResult,
+    _ticket: Ticket,
 ) -> None:
-    if result.confidence is not None and result.confidence < CONFIDENCE_REVIEW_THRESHOLD:
+    if (
+        result.confidence is not None
+        and result.confidence < CONFIDENCE_REVIEW_THRESHOLD
+    ):
         if "escalate_to_human" not in result.flags:
             result.flags.append("escalate_to_human")
-            logger.debug("%s: low confidence (%.2f) → escalate", result.ticket_id, result.confidence)
+            logger.debug(
+                "%s: low confidence (%.2f) → escalate",
+                result.ticket_id,
+                result.confidence,
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -227,7 +246,8 @@ _MULTI_ISSUE_RE = re.compile(
 
 
 def _rule_multi_issue_flag(
-    result: TriageResult, ticket: Ticket,
+    result: TriageResult,
+    ticket: Ticket,
 ) -> None:
     text = f"{ticket.subject} {ticket.body}"
     if _MULTI_ISSUE_RE.search(text):
@@ -243,23 +263,24 @@ def _rule_multi_issue_flag(
 
 _RULES = [
     # Category corrections (specific → general)
-    _rule_api_rate_limit_is_integration,   # Rule 1
-    _rule_sso_is_integration,              # Rule 2
-    _rule_howto_is_onboarding,             # Rule 3
-    _rule_money_is_billing,                # Rule 4
+    _rule_api_rate_limit_is_integration,  # Rule 1
+    _rule_sso_is_integration,  # Rule 2
+    _rule_howto_is_onboarding,  # Rule 3
+    _rule_money_is_billing,  # Rule 4
     # Priority bumps (never down, only up)
-    _rule_critical_keywords,               # Rule 5
-    _rule_high_impact,                     # Rule 6
-    _rule_enterprise_escalation,           # Rule 7
+    _rule_critical_keywords,  # Rule 5
+    _rule_high_impact,  # Rule 6
+    _rule_enterprise_escalation,  # Rule 7
     # Flags
-    _rule_low_confidence_flag,             # Rule 8
-    _rule_multi_issue_flag,                # Rule 9
+    _rule_low_confidence_flag,  # Rule 8
+    _rule_multi_issue_flag,  # Rule 9
 ]
 
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def postprocess(
     results: list[TriageResult],
@@ -294,6 +315,7 @@ def postprocess(
 
     logger.info(
         "Post-processing complete: %d/%d results modified",
-        corrections, len(results),
+        corrections,
+        len(results),
     )
     return results

@@ -287,14 +287,18 @@ class TestHighImpact:
 
 class TestEnterpriseEscalation:
     def test_enterprise_high_bug_becomes_critical(self) -> None:
-        ticket = _make_ticket(plan="Enterprise", subject="App crash", body="System error.")
+        ticket = _make_ticket(
+            plan="Enterprise", subject="App crash", body="System error."
+        )
         result = _make_result(category="bug", priority="high")
         postprocess([result], [ticket])
         assert result.priority == "critical"
         assert any("enterprise" in f for f in result.flags)
 
     def test_enterprise_medium_not_bumped(self) -> None:
-        ticket = _make_ticket(plan="Enterprise", subject="Minor bug", body="Small issue.")
+        ticket = _make_ticket(
+            plan="Enterprise", subject="Minor bug", body="Small issue."
+        )
         result = _make_result(category="bug", priority="medium")
         postprocess([result], [ticket])
         # Rule 8 only fires for high → critical, not medium → high
@@ -308,7 +312,9 @@ class TestEnterpriseEscalation:
         assert result.priority == "high"
 
     def test_enterprise_feature_request_not_bumped(self) -> None:
-        ticket = _make_ticket(plan="Enterprise", subject="Feature idea", body="Would be nice.")
+        ticket = _make_ticket(
+            plan="Enterprise", subject="Feature idea", body="Would be nice."
+        )
         result = _make_result(category="feature_request", priority="high")
         postprocess([result], [ticket])
         # feature_request not in the escalation categories
