@@ -32,8 +32,10 @@ import logging
 import os
 import re
 from collections.abc import Callable
+from pathlib import Path
 
 import litellm
+from dotenv import load_dotenv
 from litellm import acompletion
 from tenacity import (
     RetryError,
@@ -48,6 +50,8 @@ from models import Ticket, TriageResult
 
 logger = logging.getLogger(__name__)
 
+load_dotenv(Path(__file__).parent.parent / ".env")
+
 # Silence litellm's verbose default logging
 litellm.suppress_debug_info = True
 logging.getLogger("LiteLLM").setLevel(logging.WARNING)
@@ -60,6 +64,8 @@ if _BASE_URL:
 MODEL = os.environ.get("LLM_MODEL", None)
 if not MODEL:
     raise ValueError("LLM_MODEL environment variable is not set")
+
+MAX_OUTPUT_TOKENS = int(os.environ.get("LLM_MAX_TOKENS", "1024"))
 # ---------------------------------------------------------------------------
 # Category descriptions — help the model distinguish edge cases
 # ---------------------------------------------------------------------------
@@ -102,7 +108,7 @@ The following are resolved tickets from Steadfast's history. Use them to ground 
 Respond with a single JSON object — no markdown fences, no extra text:
 
 {{
-  "reasoning": "<2-3 sentences explaining your classification logic>",
+  "reasoning": "<1 sentence: why this category and priority>",
   "category": "<one of the 8 categories>",
   "priority": "<low|medium|high|critical>",
   "response": "<customer-facing reply — empathetic, specific, actionable, references Steadfast features/KB context>",
@@ -236,6 +242,8 @@ async def _call_and_parse(
     ticket_id: str,
 ) -> TriageResult:
     """Make a single LLM call via LiteLLM and parse the response.
+
+    Raises ValueError on truncated or unparseable output so Tenacity can retry.
     """
     resp = await acompletion(
         model=MODEL,
@@ -243,10 +251,22 @@ async def _call_and_parse(
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message},
         ],
-        max_tokens=1024,
+        max_tokens=MAX_OUTPUT_TOKENS,
         temperature=0.2,
     )
-    raw_text = resp.choices[0].message.content
+
+    choice = resp.choices[0]
+    finish_reason = getattr(choice, "finish_reason", None)
+
+    # Detect truncation *before* attempting to parse — saves a confusing
+    # "no JSON found" error and gives a clear retry signal.
+    if finish_reason == "length":
+        raise ValueError(
+            f"{ticket_id}: output truncated (finish_reason=length, "
+            f"max_tokens={MAX_OUTPUT_TOKENS}). Retrying."
+        )
+
+    raw_text = choice.message.content
     return _parse_response(raw_text, ticket_id)
 
 

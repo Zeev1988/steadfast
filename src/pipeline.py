@@ -17,14 +17,11 @@ import json
 import logging
 from pathlib import Path
 
-from dotenv import load_dotenv
-
 from agent import classify_tickets_sync
 from loader import inspect_kb, load_knowledge_base, load_tickets
+from postprocess import postprocess
 from preprocess import build_retriever, preprocess_kb
 from validate import validate_results
-
-load_dotenv(Path(__file__).parent.parent / ".env")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -131,6 +128,12 @@ def run_pipeline(args: argparse.Namespace) -> list[dict]:
     logger.info("=== Stage 4: Validate output ===")
     results, validation_report = validate_results(results)
     logger.info("Validation report: %s", validation_report.summary())
+
+    # ------------------------------------------------------------------
+    # Stage 5 — Heuristics & post-processing
+    # ------------------------------------------------------------------
+    logger.info("=== Stage 5: Heuristics & post-processing ===")
+    results = postprocess(results, tickets)
 
     # Convert to dicts for JSON serialisation
     return [r.to_dict() for r in results]
