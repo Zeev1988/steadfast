@@ -7,7 +7,7 @@ Usage:
   python src/pipeline.py --eval                   # pipeline + evaluation + error analysis
   python src/pipeline.py --eval --limit N         # same, but process only first N tickets
 
-Model selection is handled in agent.py via the LLM_MODEL env var in .env.
+Model selection is handled in the ``agent`` package via the LLM_MODEL env var in .env.
 """
 
 from __future__ import annotations

@@ -41,7 +41,7 @@ class LlmTriagePayload(BaseModel):
     """Structured shape of LLM JSON after ``json.loads`` (before ``TriageResult``).
 
     Extra keys are ignored.  ``reasoning`` is optional and stripped downstream.
-    Used in ``agent._parse_response`` for schema enforcement; invalid payloads
+    Used in ``agent.parse_response.parse_response`` for schema enforcement; invalid payloads
     become retryable ``ValueError``s.
     """
 
